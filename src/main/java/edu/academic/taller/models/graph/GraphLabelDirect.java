@@ -6,14 +6,14 @@ import java.util.HashMap;
 import edu.academic.taller.exceptions.LabelException;
 import edu.academic.taller.models.list.MyLinkedList;
 
-public class GraphEtiquetad<E> extends GraphDirect {
+public class GraphLabelDirect<E> extends GraphDirect {
 	
 	protected E label[]; // etiqueta
 	protected HashMap<E, Integer> dictVertices;
 	private Class<E> clazz;
 	
 	
-	public GraphEtiquetad(Integer n_vert, Class<E> claseSerializ) {
+	public GraphLabelDirect(Integer n_vert, Class<E> claseSerializ) {
 		super(n_vert);
 		this.clazz = claseSerializ;
 		this.label = (E[]) Array.newInstance(claseSerializ, n_vert+1);
@@ -54,7 +54,7 @@ public class GraphEtiquetad<E> extends GraphDirect {
 	
 	public Boolean isLabelGraph() { //verifica si el grafo esta etiquetado
 		boolean bond = true;
-		for (int i = 0; i < label.length; i++) {
+		for (int i = 1; i < label.length; i++) {
 			if (label[i] == null) {
 				bond = false;
 				break;
@@ -76,15 +76,27 @@ public class GraphEtiquetad<E> extends GraphDirect {
 
 	@Override
 	public String toString() {
-//		return "GraphEtiquetad [label=" + Arrays.toString(label) + ", dictVertices=" + dictVertices + ", clazz=" + clazz
+//		return "GraphLabelDirect [label=" + Arrays.toString(label) + ", dictVertices=" + dictVertices + ", clazz=" + clazz
 //				+ "]";
 		
 		String grafo = "";
 		try {
 			for (int i = 1; i <= nro_vertice(); i++) {
-				grafo += ""; // imprimir grafo
+				grafo += "V"+i+" Etiqueta: {"+getLabel(i).toString()+":\n\t"; // imprimir grafo
 				// lista enlazada de adyaceencia de la posicion i
-				MyLinkedList<Adyacencia> ady = adyacencia(i);
+				MyLinkedList<Adyacencia> ady = adyacencia(i); // Se obtiene una lista enlazada de Adyacencia del vertice en la pos i
+				
+				if(!ady.isEmptyLinkedList()) {
+					// lista de adyacencia del vertice 
+					Adyacencia[] matrix_ady = ady.toArray();
+					
+					for (int j = 0; j < matrix_ady.length; j++) {
+						Adyacencia aux = matrix_ady[j];
+						grafo+= "ady: V"+aux.getVertice_destino()+", weight= "+aux.getPeso()+", label: ["+getLabel(aux.getVertice_destino()).toString()+"]\n";
+					}
+					grafo+="}";
+				}
+				
 				
 				// luego imprime lo que tiene la lista de adyacencia
 			}
@@ -93,7 +105,6 @@ public class GraphEtiquetad<E> extends GraphDirect {
 		}
 		return grafo;
 	}
-	
 	
 
 }

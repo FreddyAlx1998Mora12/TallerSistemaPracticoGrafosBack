@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import edu.academic.taller.models.list.MyLinkedList;
 
@@ -19,7 +20,8 @@ public class AdapterDAO<T> implements InterfazDAO<T> {
 
 	public AdapterDAO(Class clazz) {
 		this.clazz = clazz;
-		this.g = new Gson();
+		GsonBuilder gb = new GsonBuilder();
+		this.g = gb.setPrettyPrinting().create();
 	}
 
 	@Override

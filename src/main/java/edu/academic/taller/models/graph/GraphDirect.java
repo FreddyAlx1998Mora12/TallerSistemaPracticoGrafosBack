@@ -17,7 +17,7 @@ public class GraphDirect extends Graph{
 		this.nro_edg = 0; // aristas por default
 		listAdyacencia = new MyLinkedList[nro_vertice+1]; // tamanio de  lista adyacencia para cada vertice
 		
-		for (int i = 1; i <= listAdyacencia.length; i++) {
+		for (int i = 1; i <= nro_vertice; i++) {
 			listAdyacencia[i] = new MyLinkedList<>(); // Para cada Adyacencia o mejor dicho para cada vertice se crea una lista de adyacencia
 			// 1. V1 ady v2,v3,v4
 			// 2. V2 ady v3,v5
@@ -29,7 +29,6 @@ public class GraphDirect extends Graph{
 	public void setNro_vertices(Integer nro_vertices) {
 		this.nro_vertice = nro_vertices;
 	}
-
 
 	public void setNro_edg(Integer nro_edg) {
 		this.nro_edg = nro_edg;
@@ -87,7 +86,7 @@ public class GraphDirect extends Graph{
 		return flag;
 	}
 	
-	// Peso arista
+	// Obtiene el peso arista entre un vertice v1 y v2
 	@Override
 	public Float wieght_edge(Integer v1, Integer v2) throws Exception{
 		// TODO Auto-generated method stub
@@ -129,7 +128,7 @@ public class GraphDirect extends Graph{
 	public void add_edge(Integer v1, Integer v2, Float weight) throws Exception {
 		// TODO Auto-generated method stub
 		if(v1.intValue() <= nro_vertice && v2.intValue() <= nro_vertice) {
-			if(!is_edge(v1, v2)) {
+			if(!is_edge(v1, v2)) { // Si no son arista, logicamente el elemento v2 no debe constar en v1 para poderse agg
 				nro_edg ++;
 				Adyacencia new_ady = new Adyacencia(); //
 				new_ady.setPeso(weight);

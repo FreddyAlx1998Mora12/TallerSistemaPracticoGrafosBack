@@ -16,9 +16,7 @@ public class GraphNoDirect extends GraphDirect{
 		
 		if(v1.intValue() <= nro_vertice() && v2.intValue() <= nro_vertice()) {
 			if(!is_edge(v1, v2)) {
-//				nro_edg ++;
-//				Integer nro_edg = getNro_edg();
-//				nro_edg++;
+
 				setNro_edg(nro_vertice()+1);
 				
 				Adyacencia new_ady = new Adyacencia(); //
@@ -36,5 +34,11 @@ public class GraphNoDirect extends GraphDirect{
 			throw new OverflowException("Los vertices no estan conectados o no tienen el mismo pes...");
 		}
 	}
-
+	
+	@Override
+	public void add_edge(Integer v1, Integer v2) throws Exception {
+		// TODO Auto-generated method stub
+//		super.add_edge(v1, v2);
+		add_edge(v1, v2, Float.NaN);
+	}
 }
