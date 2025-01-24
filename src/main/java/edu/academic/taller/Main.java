@@ -24,7 +24,7 @@ public class Main {
 	
 	public static HttpServer startServer() {
 
-        final ResourceConfig rc = new ResourceConfig().packages("edu.academic.project.models.rest");
+        final ResourceConfig rc = new ResourceConfig().packages("edu.academic.taller.rest");
 
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }

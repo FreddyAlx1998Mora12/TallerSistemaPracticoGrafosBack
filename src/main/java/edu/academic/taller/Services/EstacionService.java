@@ -2,6 +2,7 @@ package edu.academic.taller.Services;
 
 import edu.academic.taller.DAOs.impl.EstacionDao;
 import edu.academic.taller.models.Estacion;
+import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
 
 /**
@@ -39,5 +40,13 @@ public class EstacionService {
 	
 	public void delete(int id) throws Exception{
 		pdObj.deletebyId(id);
+	}
+	
+	public void agregarRuta(Ruta r) throws Exception {
+		pdObj.agregarRuta(r);
+	}
+	
+	public Estacion buscarporId(int id) throws Exception {
+		return pdObj.obtenerEstacion(id);
 	}
 }

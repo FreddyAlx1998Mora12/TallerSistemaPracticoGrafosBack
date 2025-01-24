@@ -1,42 +1,42 @@
 package edu.academic.taller.DAOs.impl;
 
 import edu.academic.taller.DAOs.AdapterDAO;
-import edu.academic.taller.models.Estacion;
+import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
 import edu.academic.taller.models.list.Node;
 
-public class EstacionDao extends AdapterDAO<Estacion>{
+public class RutaDao extends AdapterDAO<Ruta>{
 	
-	private Estacion estacion;
-	private MyLinkedList lista_estacion;
+	private Ruta ruta;
+	private MyLinkedList listRuta;
 	
-	public EstacionDao() {
-		super(Estacion.class);
+	public RutaDao() {
+		super(Ruta.class);
 	}
 	
 	// Singleton Pattern
-	public Estacion getEstacion() {
-		if (estacion == null) {
-			estacion = new Estacion();
+	public Ruta getRuta() {
+		if (ruta == null) {
+			ruta = new Ruta();
 		}
-		return estacion;
+		return ruta;
 	}
 	
-	public void setEstacion(Estacion station) {
-		this.estacion = station;
+	public void setRuta(Ruta station) {
+		this.ruta = station;
 	}
 
-	public MyLinkedList getLista_estacion() {
-		if(lista_estacion == null) {
-			this.lista_estacion = listAll();
+	public MyLinkedList getLista_ruta() {
+		if(listRuta == null) {
+			this.listRuta = listAll();
 		}
-		return lista_estacion;
+		return listRuta;
 	}
 	
 	// Apply Singleton Pattern
-	public void setLista_estacion(MyLinkedList lista_estacion) {
-		this.lista_estacion = lista_estacion;
+	public void setLista_ruta(MyLinkedList lista_estacion) {
+		this.listRuta = lista_estacion;
 	}
 	
 	/*
@@ -47,33 +47,29 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	// Create
 	public boolean save() throws Exception {
 		// incrementar el id
-		int id = getLista_estacion().getLength() + 1;
+		int id = getLista_ruta().getLength() + 1;
 		// validaciones de id
-		try {
-			estacion.setIdEstacion(id);
-			this.persist(estacion);			
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+
 		// asigna el id
+		ruta.setIdRuta(id);
+		this.persist(ruta);
 
 		// actualiza la lista para ProyectoCensoDAO
-		this.lista_estacion = listAll();
+		this.listRuta = listAll();
 
 		return true;
 	}
 
 	// Read -> obtener listado
 	// Read -> obtener un dato por id
-	public Estacion obtenerEstacion(Integer index) throws IndexOutOfBoundsException, Exception {
+	public Ruta obtenerRuta(Integer index) throws IndexOutOfBoundsException, Exception {
 		return this.get(index);
 	}
 
 	// Update
-	public boolean updatebyId(int index, Estacion dato_censo) throws Exception {
+	public boolean updatebyId(int index, Ruta dato_censo) throws Exception {
 		this.merge(dato_censo, index);
-		this.lista_estacion = listAll();
+		this.listRuta = listAll();
 
 		return true;
 	}
@@ -81,26 +77,26 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	public void deletebyId(int index) throws Exception {
 		this.delete(index);
 		actualizar_lista_Ids();
-		this.lista_estacion = listAll();
+		this.listRuta = listAll();
 	}
 
 	private void actualizar_lista_Ids() throws Exception {
 		int contador = 0; // Comenzar desde 1
 		int contadorGenerador = 0;
-		Node<Estacion> current = getLista_estacion().getHeader(); // Suponiendo que tienes un método para obtener la cabeza
+		Node<Ruta> current = getLista_ruta().getHeader(); // Suponiendo que tienes un método para obtener la cabeza
 																// de la lista
-		Estacion mensajero;
+		Ruta mensajero;
 
 		while (current != null) {
 			contador++; // cuenta 1
 			mensajero = current.getInfo(); // obtiene el objeto de NODO
-			mensajero.setIdEstacion(contador); // actualiza el id del Objeto
+			mensajero.setIdRuta(contador); // actualiza el id del Objeto
 
 			current.setInfo(mensajero); // Asigna o guarda esa info en su respectivo Nodo
 			current = current.getNext(); // Moverse al siguiente nodo
 		}
 
-//		this.UpdateFile(lista_estacion); // Actualiza el archivo si es necesario
+//		this.UpdateFile(listRuta); // Actualiza el archivo si es necesario
 	}
 
 	/*
@@ -108,17 +104,17 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	 */
 
 	// busqueda lineal
-	public Estacion buscarporID(int id) throws Exception {
+	public Ruta buscarporID(int id) throws Exception {
 
-		Estacion censo = null;
+		Ruta censo = null;
 		MyLinkedList listita = listAll();
 
 		if (!listAll().isEmptyLinkedList()) {
-			Estacion[] aux = (Estacion[]) listita.toArray();
+			Ruta[] aux = (Ruta[]) listita.toArray();
 
 			for (int i = 0; i < aux.length; i++) {
 
-				if (aux[i].getIdEstacion() == id) {
+				if (aux[i].getIdRuta() == id) {
 					censo = aux[i];
 				}
 			}
@@ -136,13 +132,13 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 
 		if (!listita.isEmptyLinkedList()) {
 			// Convierte a un array para recorrer
-			Estacion[] lista = (Estacion[]) listita.toArray();
+			Ruta[] lista = (Ruta[]) listita.toArray();
 
 			// resetea la lista para posterior devolver la lista ordenada
 			listita.reset();
 
 			for (int i = 1; i < lista.length; i++) {
-				Estacion aux = lista[i]; // Valor a ordenar
+				Ruta aux = lista[i]; // Valor a ordenar
 				int j = i - 1; // indice anterior
 
 				// compara el elemento en la posicion i con cada uno de los indices anterior
@@ -156,14 +152,14 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 		return listita;
 	}
 
-	private Boolean verify(Estacion a, Estacion b, Integer type_order, String atributo) {
+	private Boolean verify(Ruta a, Ruta b, Integer type_order, String atributo) {
 		if (type_order == 1) { // Ascendente
-			if (atributo.equalsIgnoreCase("codigoEstacion")) {
-				return a.getCodigoEstacion().toLowerCase().compareTo(b.getCodigoEstacion().toLowerCase()) > 0;
+			if (atributo.equalsIgnoreCase("id")) {
+				return a.getIdRuta() > b.getIdRuta() ;
 			} 
 		} else {
-			if (atributo.equalsIgnoreCase("codigoEstacion")) {
-				return a.getCodigoEstacion().toLowerCase().compareTo(b.getCodigoEstacion().toLowerCase()) < 0;
+			if (atributo.equalsIgnoreCase("id")) {
+				return a.getIdRuta() < b.getIdRuta() ;
 			}
 		}
 		return false;
@@ -174,8 +170,8 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	 */
 	public MyLinkedList ordenarListaQuickSort(int tipo_orden, String atributo) {
 		
-		MyLinkedList list = getLista_estacion();
-		Estacion[] array = (Estacion[]) list.toArray();
+		MyLinkedList list = getLista_ruta();
+		Ruta[] array = (Ruta[]) list.toArray();
 
 		list.reset();
 
@@ -198,7 +194,7 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	 * @param type_order tipo de orden 1 asc, 0 desc
 	 * @param atributo criterio
 	 */
-	private void quickSort(Estacion[] array, int bajo, int alto, int type_order, String atributo) {
+	private void quickSort(Ruta[] array, int bajo, int alto, int type_order, String atributo) {
 		// Controlar de modo que debido a la recursion el metodo se acaba cuando bajo es >= alto
 		if (bajo < alto) {
 			
@@ -213,10 +209,10 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 	}
 
 	// Método para realizar la partición del arreglo, retorna indice del pivote
-	private int particion_array(Estacion[] array, int bajo, int alto, int type_order, String atributo) {
+	private int particion_array(Ruta[] array, int bajo, int alto, int type_order, String atributo) {
 		// Tomamos el último elemento como pivote
 		// Para comparar con los valores bajos		
-		Estacion pivote = array[alto];
+		Ruta pivote = array[alto];
 
 		// Índice para el menor elemento
 		int i = bajo - 1;
@@ -242,19 +238,9 @@ public class EstacionDao extends AdapterDAO<Estacion>{
 		return i + 1; // Devolvemos el índice del pivote
 	}
 
-	private void intercambio(Estacion[] arr, int index1, int index2) {
-		Estacion temp = arr[index1];
+	private void intercambio(Ruta[] arr, int index1, int index2) {
+		Ruta temp = arr[index1];
 		arr[index1] = arr[index2];
 		arr[index2] = temp;
-	}
-	
-	public void agregarRuta(Ruta r) throws Exception{
-		// Agrega la ruta a la lista
-		this.getEstacion().getListRutas().add(r);
-		// Modifica
-		updatebyId(this.getEstacion().getIdEstacion(), this.getEstacion());
-		
-		// Trae la lista actualizada
-		this.lista_estacion = listAll();
 	}
 }

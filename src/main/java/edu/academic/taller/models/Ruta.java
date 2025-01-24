@@ -1,8 +1,11 @@
 package edu.academic.taller.models;
 
+/**
+ * Clase que identifica un punto o parada de una unidad de transporte
+ */
 public class Ruta {
 	private int idRuta;
-	private String direccionPuntoParada; // Describe barrio, nombre de parada,
+	private String descripcion; // Describe barrio, nombre de parada,
 	private String latitud, longitud; // Coordenadas
 	
 	public int getIdRuta() {
@@ -12,10 +15,10 @@ public class Ruta {
 		this.idRuta = idRuta;
 	}
 	public String getDireccionPuntoParada() {
-		return direccionPuntoParada;
+		return descripcion;
 	}
 	public void setDireccionPuntoParada(String direccionPuntoParada) {
-		this.direccionPuntoParada = direccionPuntoParada;
+		this.descripcion = direccionPuntoParada;
 	}
 	public String getLatitud() {
 		return latitud;

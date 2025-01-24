@@ -1,0 +1,32 @@
+[
+  {
+    "idRuta": 1,
+    "descripcion": "terminal",
+    "latitud": "111",
+    "longitud": "111"
+  },
+  {
+    "idRuta": 2,
+    "descripcion": "terminal",
+    "latitud": "111",
+    "longitud": "111"
+  },
+  {
+    "idRuta": 3,
+    "descripcion": "terminal",
+    "latitud": "111",
+    "longitud": "111"
+  },
+  {
+    "idRuta": 4,
+    "descripcion": "terminal",
+    "latitud": "111",
+    "longitud": "111"
+  },
+  {
+    "idRuta": 5,
+    "descripcion": "terminal",
+    "latitud": "111",
+    "longitud": "111"
+  }
+]

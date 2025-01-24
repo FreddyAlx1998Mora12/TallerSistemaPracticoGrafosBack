@@ -1,5 +1,7 @@
 package edu.academic.taller.models;
 
+import edu.academic.taller.models.list.MyLinkedList;
+
 /**
  * Clase que identifica una Estacion o Lineas de Transporte
  * Contiene una lista de Rutas, Ejmpl:
@@ -13,6 +15,8 @@ public class Estacion {
 	private String horaInicio; // Hora de inicio de actividades
 	private String horaFin; // Hora de finalizacion de actividades
 	private int nroUnidades; // Nro. de Unidades para tal Linea
+	
+	private MyLinkedList<Ruta> listRutas; // Lista de Rutass
 	
 	public int getIdEstacion() {
 		return idEstacion;
@@ -43,6 +47,12 @@ public class Estacion {
 	}
 	public void setNroUnidades(int nroUnidades) {
 		this.nroUnidades = nroUnidades;
+	}
+	public MyLinkedList<Ruta> getListRutas() {
+		return listRutas;
+	}
+	public void setListRutas(MyLinkedList<Ruta> listRutas) {
+		this.listRutas = listRutas;
 	}
 
 }

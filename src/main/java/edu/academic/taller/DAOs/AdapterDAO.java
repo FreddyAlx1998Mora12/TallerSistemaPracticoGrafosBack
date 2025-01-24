@@ -88,7 +88,9 @@ public class AdapterDAO<T> implements InterfazDAO<T> {
         if (!list.isEmptyLinkedList()) {
             T[] matriz = list.toArray();
             for (int i = 0; i < matriz.length; i++) {
+            	System.out.println("Metodo get: i "+i);
                 if (getIdent(matriz[i]).intValue() == id.intValue()) {
+                	System.out.println("Ingreso en la posicion i: "+i+"\nObjeto: "+matriz[i]);
                     return matriz[i];
                 }
             }
