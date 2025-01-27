@@ -1,16 +1,15 @@
 package edu.academic.taller.models.graph;
 
-
 /**
- * Clase Adyacencia que identifica a que otros vertices estan conectados un vertice
- * En otras palabras son las aristas
+ * Clase Adyacencia que identifica a que otros vertices estan conectados un
+ * vertice En otras palabras son las aristas
  */
 public class Adyacencia {
-	
+
 	private Integer vertice_destino; // vertice destino
-	
-	private Float peso; //weight peso de adyacencia o arista
-	
+
+	private Float peso; // weight peso de adyacencia o arista
+
 	public Adyacencia() {
 	}
 

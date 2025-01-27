@@ -22,7 +22,7 @@ import edu.academic.taller.models.list.MyLinkedList;
 public class RutaApi {
 
 	RutaService rutServic = new RutaService();
-	
+
 	// lista todas las familias censadas
 	@Path("/list")
 	@GET
@@ -36,7 +36,6 @@ public class RutaApi {
 		return Response.ok(map).build();
 	}
 
-
 	@Path("/save")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -45,18 +44,18 @@ public class RutaApi {
 
 		// Objetos
 		Ruta ruta = new Ruta();
-		
-		// Capturar variables		
+
+		// Capturar variables
 		ruta.setDireccionPuntoParada(request.get(("descripcion")).toString());
 		ruta.setLatitud(request.get(("lat")).toString());
 		ruta.setLongitud(request.get(("long")).toString());
-		
-		// Capturar la lista de rutas (Si en caso tiene)		
+
+		// Capturar la lista de rutas (Si en caso tiene)
 //		System.out.println(request.get("rutas").toString());
 //		HashMap rutas = (HashMap) request.get(("rutas"));
-		
+
 		rutServic.setRuta(ruta);
-		
+
 		HashMap res = new HashMap<>(); // Para construir un cuerpo de response
 
 		try {
@@ -79,21 +78,21 @@ public class RutaApi {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response update(HashMap request) throws IndexOutOfBoundsException, Exception { 
+	public Response update(HashMap request) throws IndexOutOfBoundsException, Exception {
 
 		HashMap res = new HashMap<>(); // Para construir un cuerpo de response
 		// Validation
 		int idE = (int) request.get(("idEstacion"));
 		Ruta ruta = rutServic.buscarporId(idE);
-		
+
 		ruta.setDireccionPuntoParada(request.get(("descripcion")).toString());
 		ruta.setLatitud(request.get(("lat")).toString());
 		ruta.setLongitud(request.get(("long")).toString());
-		
+
 		try {
 			rutServic.setRuta(ruta);
 			rutServic.update(ruta, idE);
-			
+
 			return Response.ok(res).build();
 //			return Response.ok(res).build(); 
 		} catch (Exception e) {

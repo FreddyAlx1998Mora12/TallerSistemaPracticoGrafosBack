@@ -1,20 +1,19 @@
 package edu.academic.taller.DAOs.impl;
 
-import edu.academic.taller.DAOs.AdapterDAO;
-import edu.academic.taller.models.Ruta;
+import edu.academic.taller.DAOs.AdapterDao;
 import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
 import edu.academic.taller.models.list.Node;
 
-public class RutaDao extends AdapterDAO<Ruta>{
-	
+public class RutaDao extends AdapterDao<Ruta> {
+
 	private Ruta ruta;
 	private MyLinkedList listRuta;
-	
+
 	public RutaDao() {
 		super(Ruta.class);
 	}
-	
+
 	// Singleton Pattern
 	public Ruta getRuta() {
 		if (ruta == null) {
@@ -22,26 +21,20 @@ public class RutaDao extends AdapterDAO<Ruta>{
 		}
 		return ruta;
 	}
-	
+
 	public void setRuta(Ruta station) {
 		this.ruta = station;
 	}
 
 	public MyLinkedList getLista_ruta() {
-		if(listRuta == null) {
+		if (listRuta == null) {
 			this.listRuta = listAll();
 		}
 		return listRuta;
 	}
-	
-	// Apply Singleton Pattern
-	public void setLista_ruta(MyLinkedList lista_estacion) {
-		this.listRuta = lista_estacion;
-	}
-	
+
 	/*
-	 * ########################################## 
-	 * CreateReadUpdateDelete
+	 * ########################################## CreateReadUpdateDelete
 	 * ##########################################
 	 */
 	// Create
@@ -84,7 +77,7 @@ public class RutaDao extends AdapterDAO<Ruta>{
 		int contador = 0; // Comenzar desde 1
 		int contadorGenerador = 0;
 		Node<Ruta> current = getLista_ruta().getHeader(); // Suponiendo que tienes un método para obtener la cabeza
-																// de la lista
+															// de la lista
 		Ruta mensajero;
 
 		while (current != null) {
@@ -124,6 +117,51 @@ public class RutaDao extends AdapterDAO<Ruta>{
 
 	}
 
+	// busqueda lineal
+	public Ruta buscarporDescripcion(String text) throws Exception {
+
+		Ruta censo = null;
+		MyLinkedList listita = listAll();
+
+		if (!listAll().isEmptyLinkedList()) {
+			Ruta[] aux = (Ruta[]) listita.toArray();
+
+			for (int i = 0; i < aux.length; i++) {
+
+				if (aux[i].getDireccionPuntoParada().toLowerCase().compareToIgnoreCase(text) == 0) {
+					censo = aux[i];
+					break;
+				}
+			}
+		}
+
+		return censo;
+	}
+
+	public boolean existeRuta(Ruta r) throws Exception {
+
+		boolean censo = false;
+		MyLinkedList listita = listAll();
+
+		if (!listAll().isEmptyLinkedList()) {
+			Ruta[] aux = (Ruta[]) listita.toArray();
+
+			for (int i = 0; i < aux.length; i++) {
+
+				if (aux[i].getDireccionPuntoParada().trim()
+						.compareToIgnoreCase(r.getDireccionPuntoParada().trim()) == 0) {
+					if (aux[i].getLatitud().trim().compareToIgnoreCase(r.getLatitud().trim()) == 0) {
+						if (aux[i].getLongitud().trim().compareToIgnoreCase(r.getLongitud().trim()) == 0) {
+							censo = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return censo;
+	}
 
 	// Ordenar lista segun el tipo y el atributo o criterio
 	public MyLinkedList ordenarLista(Integer type_order, String atributo) {
@@ -155,11 +193,11 @@ public class RutaDao extends AdapterDAO<Ruta>{
 	private Boolean verify(Ruta a, Ruta b, Integer type_order, String atributo) {
 		if (type_order == 1) { // Ascendente
 			if (atributo.equalsIgnoreCase("id")) {
-				return a.getIdRuta() > b.getIdRuta() ;
-			} 
+				return a.getIdRuta() > b.getIdRuta();
+			}
 		} else {
 			if (atributo.equalsIgnoreCase("id")) {
-				return a.getIdRuta() < b.getIdRuta() ;
+				return a.getIdRuta() < b.getIdRuta();
 			}
 		}
 		return false;
@@ -169,14 +207,15 @@ public class RutaDao extends AdapterDAO<Ruta>{
 	 * Metodo de Ordenacion QuickSort
 	 */
 	public MyLinkedList ordenarListaQuickSort(int tipo_orden, String atributo) {
-		
+
 		MyLinkedList list = getLista_ruta();
 		Ruta[] array = (Ruta[]) list.toArray();
 
 		list.reset();
 
 		// Método QuickSort para ordenar el arreglo
-		// Parametros , array, valor indic bajo, valor indic alto (ultimo), tipo orden, atributo
+		// Parametros , array, valor indic bajo, valor indic alto (ultimo), tipo orden,
+		// atributo
 		quickSort(array, 0, array.length - 1, tipo_orden, atributo);
 
 		list.tolist(array);
@@ -186,20 +225,22 @@ public class RutaDao extends AdapterDAO<Ruta>{
 
 	// Método de QuickSort que ordena el arreglo
 	/**
-	 * Funcion sin valor de retorno que realiza la ordenacion de una lista por 
-	 * tipo de orden
-	 * @param array arreglo del Objeto a ordenar
-	 * @param bajo valor bajo del array principio
-	 * @param alto valor alto del array final
+	 * Funcion sin valor de retorno que realiza la ordenacion de una lista por tipo
+	 * de orden
+	 * 
+	 * @param array      arreglo del Objeto a ordenar
+	 * @param bajo       valor bajo del array principio
+	 * @param alto       valor alto del array final
 	 * @param type_order tipo de orden 1 asc, 0 desc
-	 * @param atributo criterio
+	 * @param atributo   criterio
 	 */
 	private void quickSort(Ruta[] array, int bajo, int alto, int type_order, String atributo) {
-		// Controlar de modo que debido a la recursion el metodo se acaba cuando bajo es >= alto
+		// Controlar de modo que debido a la recursion el metodo se acaba cuando bajo es
+		// >= alto
 		if (bajo < alto) {
-			
+
 			// Variable indice del pivote
-			// Particiona y ordena		
+			// Particiona y ordena
 			int pi = particion_array(array, bajo, alto, type_order, atributo);
 
 			// Recursivamente ordenamos las dos sublistas
@@ -211,22 +252,24 @@ public class RutaDao extends AdapterDAO<Ruta>{
 	// Método para realizar la partición del arreglo, retorna indice del pivote
 	private int particion_array(Ruta[] array, int bajo, int alto, int type_order, String atributo) {
 		// Tomamos el último elemento como pivote
-		// Para comparar con los valores bajos		
+		// Para comparar con los valores bajos
 		Ruta pivote = array[alto];
 
 		// Índice para el menor elemento
 		int i = bajo - 1;
 
 		// Comparamos cada elemento con el pivote
-		// desde el primer elemento hasta el ultimo elemento de la lista		
+		// desde el primer elemento hasta el ultimo elemento de la lista
 		for (int j = bajo; j < alto; j++) {
 			// Compara los elementos y verifica, ojo
-			// Recordemos que para verificar que el elemento pivote es mayor que el objeto primero
-			// debo comparar primero el pivote		
-			if (verify(pivote,array[j], type_order, atributo)) {
+			// Recordemos que para verificar que el elemento pivote es mayor que el objeto
+			// primero
+			// debo comparar primero el pivote
+			if (verify(pivote, array[j], type_order, atributo)) {
 				i++; // Aumentamos el índice de menor elemento para seguir comparando con el pivote
 
-				// Intercambiamos elementos ya que existe que el elemento efectivamente es mayor al pivote
+				// Intercambiamos elementos ya que existe que el elemento efectivamente es mayor
+				// al pivote
 				intercambio(array, i, j);
 
 			}

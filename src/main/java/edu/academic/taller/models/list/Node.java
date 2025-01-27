@@ -1,37 +1,50 @@
 package edu.academic.taller.models.list;
 
-/**
- * Clase Generica que identifica un Nodo o Node generico
- * @param <E> dato generico que representa un elemento
- */
 public class Node<E> {
+//	Utilizaremos doblemente enlazada
 
-	// E es el tipo de Dato, y info la informacion como tal, lo que contiene
-	private E info; 
-	// next, es el siguiente nodo a enlazar o nodo vecino	
-	private Node<E> next;
-	
-	// Constructor para instanciar nodos
-	public Node(){
+	private E info;
+	private Node<E> next, prev;
+
+//	Constructores
+	public Node() {
 		this.info = null;
 		this.next = null;
+		this.prev = null;
 	}
-	
-	/**
-	 * Instanciacion de la clase Node
-	 * @param info es la informacion del nodo
-	 */
-	public Node(E info) {
-		this.info = info;
+
+	public Node(E dato) {
+		this.info = dato;
 		this.next = null;
+		this.prev = null;
 	}
-	
+
+	/**
+	 * Instanciar nodo con informacion o dato y el enlace al siguiente
+	 * 
+	 * @param info
+	 * @param next
+	 */
 	public Node(E info, Node<E> next) {
 		this.info = info;
 		this.next = next;
+		this.prev = null;
 	}
 
-	// Getters and Setters 
+	/**
+	 * Instanciar un nodo con 3 args
+	 * 
+	 * @param info dato
+	 * @param prev nodo anterior
+	 * @param next nodo siguiente
+	 */
+	public Node(E info, Node<E> prev, Node<E> next) {
+		this.info = info;
+		this.prev = prev;
+		this.next = next;
+	}
+
+//	Getters and Setters
 	public E getInfo() {
 		return info;
 	}
@@ -47,5 +60,12 @@ public class Node<E> {
 	public void setNext(Node<E> next) {
 		this.next = next;
 	}
-	
+
+	public Node<E> getPrev() {
+		return prev;
+	}
+
+	public void setPrev(Node<E> prev) {
+		this.prev = prev;
+	}
 }

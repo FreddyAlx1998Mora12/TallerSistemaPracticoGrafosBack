@@ -1,30 +1,30 @@
 [
   {
     "idEstacion": 1,
-    "codigoEstacion": "L8",
+    "codigoEstacion": "L1",
     "horaInicio": "08:20",
     "horaFin": "19:20",
-    "nroUnidades": 26,
-    "listRutas": {
-      "size": 0
-    }
+    "nroUnidades": 26
   },
   {
     "idEstacion": 2,
-    "codigoEstacion": "L8",
+    "codigoEstacion": "L2",
     "horaInicio": "08:20",
     "horaFin": "19:20",
-    "nroUnidades": 26,
-    "listRutas": {
-      "header": {
-        "info": {
-          "idRuta": 3,
-          "descripcion": "terminal",
-          "latitud": "111",
-          "longitud": "111"
-        }
-      },
-      "size": 1
-    }
+    "nroUnidades": 26
+  },
+  {
+    "idEstacion": 3,
+    "codigoEstacion": "L3",
+    "horaInicio": "08:20",
+    "horaFin": "19:20",
+    "nroUnidades": 26
+  },
+  {
+    "idEstacion": 4,
+    "codigoEstacion": "L4",
+    "horaInicio": "08:20",
+    "horaFin": "19:20",
+    "nroUnidades": 26
   }
 ]

@@ -6,47 +6,47 @@ import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
 
 /**
- * Clase que brinda servicios, interactua como intermediario entre la capa logica de negocio
- * y la capa de datos, DAO's
+ * Clase que brinda servicios, interactua como intermediario entre la capa
+ * logica de negocio y la capa de datos, DAO's
  */
 public class EstacionService {
-	
+
 	private EstacionDao pdObj;
-	
+
 	public EstacionService() {
 		pdObj = new EstacionDao();
 	}
-	
-	public Estacion getEstacion() { 
+
+	public Estacion getEstacion() {
 		return pdObj.getEstacion();
 	}
-	
+
 	public void setEstacion(Estacion est) {
 		pdObj.setEstacion(est);
 	}
-	
+
 	public MyLinkedList listAll() {
 		return pdObj.getLista_estacion();
 	}
-	
+
 //	Operacion de guardar
-	public boolean save() throws Exception{
+	public boolean save() throws Exception {
 		return pdObj.save();
 	}
-	
-	public Boolean update(Estacion p, Integer id) throws Exception{
+
+	public Boolean update(Estacion p, Integer id) throws Exception {
 		return pdObj.updatebyId(id, p);
 	}
-	
-	public void delete(int id) throws Exception{
-		pdObj.deletebyId(id);
+
+	public void delete(int id) throws Exception {
+		pdObj.deletebyId(id - 1);
 	}
-	
-	public void agregarRuta(Ruta r) throws Exception {
-		pdObj.agregarRuta(r);
-	}
-	
+
+//	public void agregarRuta(Ruta r) throws Exception {
+//		pdObj.agregarRuta(r);
+//	}
+
 	public Estacion buscarporId(int id) throws Exception {
-		return pdObj.obtenerEstacion(id);
+		return pdObj.buscarporID(id);
 	}
 }
