@@ -266,7 +266,8 @@ public class EstacionApi {
 //			grafo.insertEdgeLabel("Freddy", "Cristhian");
 //			grafo.insertEdgeLabel("Freddy", "Diego");
 
-			System.out.println(grafo.toString());
+//			System.out.println(grafo.toString());
+			grafo.drawGraph();
 			map.put("data", grafo.toString());
 		} catch (Exception e) {
 			// TODO: handle exception

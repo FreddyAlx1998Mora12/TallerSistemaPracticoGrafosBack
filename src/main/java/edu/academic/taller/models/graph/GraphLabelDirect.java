@@ -1,7 +1,13 @@
 package edu.academic.taller.models.graph;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import edu.academic.taller.exceptions.LabelException;
 import edu.academic.taller.models.list.MyLinkedList;
@@ -11,6 +17,8 @@ public class GraphLabelDirect<E> extends GraphDirect {
 	protected E label[]; // etiqueta
 	protected HashMap<E, Integer> dictVertices;
 	private Class<E> clazz;
+
+	public static String filePath = "src/main/resources/graphs/"; // para almacenar los archivos json
 
 	public GraphLabelDirect(Integer n_vert, Class<E> claseSerializ) {
 		super(n_vert);
@@ -103,6 +111,64 @@ public class GraphLabelDirect<E> extends GraphDirect {
 			// TODO: handle exception
 		}
 		return grafo;
+	}
+
+	// Realizar aqui el metodo de dibujar grafo, y cargar grafo
+	public void drawGraph() throws Exception {
+
+		StringBuilder sb = new StringBuilder();
+		GsonBuilder gb = new GsonBuilder();
+		Gson g = gb.setPrettyPrinting().create();
+
+		sb.append("{\"Vertices\": [\n");
+
+		// iteramos el hashmap
+		for (int i = 1; i <= nro_vertice(); i++) {
+			sb.append("{\n \"id\": " + i + ",\n\"label\" : ");
+			sb.append(g.toJson(getLabel(i)) + "\n},\n");
+		}
+
+		// termina iteracion de vertices, se elimina la ultima coma
+		if (sb.charAt(sb.length() - 2) == ',') {
+			sb.delete(sb.length() - 2, sb.length());
+		}
+
+		// Adyacencias
+		sb.append("],\n\"Edges\": [\n");
+
+		for (int i = 1; i <= nro_vertice(); i++) {
+			MyLinkedList<Adyacencia> ady = adyacencia(i);
+			if (!ady.isEmptyLinkedList()) {
+				// lista de adyacencia del vertice
+				Adyacencia[] matrix_ady = ady.toArray();
+
+				for (int j = 0; j < matrix_ady.length; j++) {
+					Adyacencia aux = matrix_ady[j];
+					sb.append("{ \"from\" : " + i + ", \"to\" : " + aux.getVertice_destino() + "},\n");
+				}
+
+			}
+
+		}
+		// termina iteracion de vertices, se elimina la ultima coma
+		if (sb.charAt(sb.length() - 2) == ',') {
+			sb.delete(sb.length() - 2, sb.length());
+		}
+
+		sb.append("\n]\n}");
+
+		// 1. Crear un Objeto File o Archivo para almacenar los datos
+		File file = new File(filePath + "Grafo_" + clazz.getSimpleName() + ".json");
+		// 2. Objeto como tipo cursor para la escritura
+		FileWriter fw = new FileWriter(file);
+		try { // Usamos try-with-resources para cerrar automáticamente el FileWriter
+			fw.write(sb.toString());
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			System.out.println("Error al escribir en el archivo: " + e.getMessage());
+		}
+
 	}
 
 }

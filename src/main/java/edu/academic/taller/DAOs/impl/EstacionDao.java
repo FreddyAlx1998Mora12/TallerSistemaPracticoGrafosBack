@@ -1,6 +1,9 @@
 package edu.academic.taller.DAOs.impl;
 
+import java.io.FileNotFoundException;
+
 import edu.academic.taller.DAOs.AdapterDao;
+import edu.academic.taller.DAOs.InterfaceGraphDao;
 import edu.academic.taller.models.Estacion;
 import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
@@ -274,4 +277,10 @@ public class EstacionDao extends AdapterDao<Estacion> {
 //		// Trae la lista actualizada
 //		this.lista_estacion = listAll();
 //	}
+	
+	// Logica para dibujar un grafo, y cargar 
+	
+	// Logica para algoritmo de recorrido
+	
+	
 }
