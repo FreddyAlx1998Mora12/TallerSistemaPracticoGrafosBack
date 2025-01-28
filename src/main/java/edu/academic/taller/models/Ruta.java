@@ -6,7 +6,7 @@ package edu.academic.taller.models;
 public class Ruta {
 	private int idRuta;
 	private String descripcion; // Describe barrio, nombre de parada,
-	private String latitud, longitud; // Coordenadas
+	private Double latitud, longitud; // Coordenadas
 
 	public int getIdRuta() {
 		return idRuta;
@@ -16,27 +16,27 @@ public class Ruta {
 		this.idRuta = idRuta;
 	}
 
-	public String getDireccionPuntoParada() {
+	public String getDescripcion() {
 		return descripcion;
 	}
 
-	public void setDireccionPuntoParada(String direccionPuntoParada) {
-		this.descripcion = direccionPuntoParada;
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
-	public String getLatitud() {
+	public Double getLatitud() {
 		return latitud;
 	}
 
-	public void setLatitud(String latitud) {
+	public void setLatitud(Double latitud) {
 		this.latitud = latitud;
 	}
 
-	public String getLongitud() {
+	public Double getLongitud() {
 		return longitud;
 	}
 
-	public void setLongitud(String longitud) {
+	public void setLongitud(Double longitud) {
 		this.longitud = longitud;
 	}
 }

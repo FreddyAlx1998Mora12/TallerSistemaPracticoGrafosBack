@@ -128,7 +128,7 @@ public class RutaDao extends AdapterDao<Ruta> {
 
 			for (int i = 0; i < aux.length; i++) {
 
-				if (aux[i].getDireccionPuntoParada().toLowerCase().compareToIgnoreCase(text) == 0) {
+				if (aux[i].getDescripcion().toLowerCase().compareToIgnoreCase(text) == 0) {
 					censo = aux[i];
 					break;
 				}
@@ -148,10 +148,10 @@ public class RutaDao extends AdapterDao<Ruta> {
 
 			for (int i = 0; i < aux.length; i++) {
 
-				if (aux[i].getDireccionPuntoParada().trim()
-						.compareToIgnoreCase(r.getDireccionPuntoParada().trim()) == 0) {
-					if (aux[i].getLatitud().trim().compareToIgnoreCase(r.getLatitud().trim()) == 0) {
-						if (aux[i].getLongitud().trim().compareToIgnoreCase(r.getLongitud().trim()) == 0) {
+				if (aux[i].getDescripcion().trim()
+						.compareToIgnoreCase(r.getDescripcion().trim()) == 0) {
+					if (aux[i].getLatitud() == r.getLatitud()) {
+						if (aux[i].getLongitud() == r.getLatitud()) {
 							censo = true;
 							break;
 						}

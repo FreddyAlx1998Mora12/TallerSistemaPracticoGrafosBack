@@ -278,9 +278,6 @@ public class EstacionDao extends AdapterDao<Estacion> {
 //		this.lista_estacion = listAll();
 //	}
 	
-	// Logica para dibujar un grafo, y cargar 
-	
-	// Logica para algoritmo de recorrido
 	
 	
 }

@@ -26,5 +26,12 @@
     "horaInicio": "08:20",
     "horaFin": "19:20",
     "nroUnidades": 26
+  },
+  {
+    "idEstacion": 5,
+    "codigoEstacion": "L5",
+    "horaInicio": "08:20",
+    "horaFin": "19:20",
+    "nroUnidades": 26
   }
 ]

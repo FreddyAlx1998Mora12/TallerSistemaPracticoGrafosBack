@@ -197,11 +197,11 @@ public class EstacionApi {
 
 		HashMap rutas = (HashMap) request.get(("rutas"));
 
-		ruta.setDireccionPuntoParada(rutas.get("descripcion").toString());
-		ruta.setLatitud(rutas.get("lat").toString());
-		ruta.setLongitud(rutas.get("long").toString());
+		ruta.setDescripcion(request.get(("descripcion")).toString());
+		ruta.setLatitud((double) request.get(("lat")));
+		ruta.setLongitud((double) request.get(("long")));
 
-		System.out.println("Captura en el metodo add el objeto de rutas a ingresar: " + ruta.getDireccionPuntoParada()
+		System.out.println("Captura en el metodo add el objeto de rutas a ingresar: " + ruta.getDescripcion()
 				+ " ," + ruta.getLatitud() + ", " + ruta.getLongitud());
 
 		try {
@@ -214,7 +214,7 @@ public class EstacionApi {
 				rs.setRuta(ruta);
 				rs.save();
 			} else {
-				ruta = rs.buscarpordescripcion(ruta.getDireccionPuntoParada());
+				ruta = rs.buscarpordescripcion(ruta.getDescripcion());
 				System.out.println("Si existe ruta: " + ruta);
 				System.out.println("Si existe ruta: " + ruta.getIdRuta());
 			}
@@ -268,7 +268,10 @@ public class EstacionApi {
 
 //			System.out.println(grafo.toString());
 			grafo.drawGraph();
-			map.put("data", grafo.toString());
+			
+//			HashMap<String, String> mapGraph = new HashMap<>(grafo.readGraph());
+			grafo.loadGraph();
+			map.put("data", grafo.readGraph());
 		} catch (Exception e) {
 			// TODO: handle exception
 			map.put("error", e.getLocalizedMessage());

@@ -1,18 +1,24 @@
 package edu.academic.taller.models.graph;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import edu.academic.taller.DAOs.InterfaceGraphDao;
 import edu.academic.taller.exceptions.LabelException;
 import edu.academic.taller.models.list.MyLinkedList;
 
-public class GraphLabelDirect<E> extends GraphDirect {
+public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDao<E> {
 
 	protected E label[]; // etiqueta
 	protected HashMap<E, Integer> dictVertices;
@@ -114,8 +120,9 @@ public class GraphLabelDirect<E> extends GraphDirect {
 	}
 
 	// Realizar aqui el metodo de dibujar grafo, y cargar grafo
+	@Override
 	public void drawGraph() throws Exception {
-
+		// TODO Auto-generated method stub
 		StringBuilder sb = new StringBuilder();
 		GsonBuilder gb = new GsonBuilder();
 		Gson g = gb.setPrettyPrinting().create();
@@ -168,7 +175,86 @@ public class GraphLabelDirect<E> extends GraphDirect {
 		} catch (IOException e) {
 			System.out.println("Error al escribir en el archivo: " + e.getMessage());
 		}
+	}
 
+	@Override
+	public String loadGraph() throws FileNotFoundException, Exception {
+		// TODO Auto-generated method stub
+		// Traer la data para deserializar
+		System.out.println("Intentando deserializar metodo loadGraph GraphLabelDirect...");
+		String file_json = readGraph();
+		
+		if (file_json.isEmpty()) {
+			throw new FileNotFoundException("El archivo esta vacio o no se pudo leer, verifique que el archivo exista o contenga informacion.");
+		}
+		
+		try {
+			// Crear una instancia de HashMap o dict
+			// intentar deserializar lo que contiene VERTICES
+			// luego leer lo que dice nodos, y conectar segun el valor que esta
+			Gson gson = new Gson();
+            // Deserializar el JSON a un mapa que contenga los vértices y las aristas
+			TypeToken<Map<String, MyLinkedList<Map<String, Object>>>> token = new TypeToken<Map<String, MyLinkedList<Map<String, Object>>>>() {};
+            Map<String, MyLinkedList<Map<String, Object>>> graphData = gson.fromJson(file_json, token.getType());
+
+            // Extraer los vértices y las aristas
+            MyLinkedList<Map<String, Object>> vertices = graphData.get("Vertices");
+            MyLinkedList<Map<String, Object>> edges = graphData.get("Edges");
+            
+            System.out.println("Intentando deserializar lo que contiene vertices..."+vertices.getClass().getTypeName());
+            System.out.println("Intentando deserializar lo que contiene vertices..."+edges.getClass().getTypeName());
+            
+            // Crear un HashMap para almacenar los vértices
+            HashMap<E, Integer> verticesMap = new HashMap<>();
+
+            // Reconstruir los vértices a partir del JSON
+            /*for (Map<String, Object> vertex : vertices) {
+                int id = ((Double) vertex.get("id")).intValue();
+                // Deserializar la etiqueta (label) como un objeto Estacion
+                E estacion = gson.fromJson(gson.toJson(vertex.get("label")), E);
+                // Añadir al HashMap
+                verticesMap.put(estacion, id);
+            }
+
+            // Crear el grafo
+            for (Map<String, Object> edge : edges) {
+                int from = ((Double) edge.get("from")).intValue();
+                int to = ((Double) edge.get("to")).intValue();
+
+                // Aquí puedes reconstruir la relación de aristas entre los vértices
+                // Por ejemplo, podrías tener un HashMap para almacenar las conexiones de los vértices
+                System.out.println("Conexión de " + from + " a " + to);
+            }
+
+            // Imprimir los vértices para ver que se cargaron correctamente
+            verticesMap.forEach((etiqueta, id) -> {
+                System.out.println("Estación: " + etiqueta.getCodigoEstacion() + ", ID: " + id);
+            });*/
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		
+		
+		return null;
+	}
+
+	@Override
+	public String readGraph() throws FileNotFoundException, Exception {
+		// TODO Auto-generated method stub
+		// 1. Crear objeto
+		File file = new File(filePath + "Grafo_" + clazz.getSimpleName() + ".json");
+		// 2. Clase facilitador de lectura (fileReader lector de archivo(file archivo)))
+		Scanner in = new Scanner(new FileReader(file));
+		StringBuilder sb = new StringBuilder();
+
+		while (in.hasNext()) {
+			sb.append(in.nextLine()).append("\n");
+		}
+		in.close(); // cerrar siempre
+		return sb.toString().trim();
 	}
 
 }
