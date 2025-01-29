@@ -9,6 +9,8 @@ public interface InterfaceGraphDao<T> {
 	
 	void drawGraph() throws Exception;
 	
+//	Float calculaDistanciaGeodesica(T v1, T v2) throws Exception;
+	
 	String readGraph() throws FileNotFoundException, Exception;
 	
 	HashMap<Integer, Adyacencia[]> loadGraph() throws FileNotFoundException, Exception;

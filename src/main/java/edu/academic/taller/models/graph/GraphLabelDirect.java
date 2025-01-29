@@ -7,7 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -16,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 
 import edu.academic.taller.DAOs.InterfaceGraphDao;
 import edu.academic.taller.exceptions.LabelException;
+import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.list.MyLinkedList;
 import edu.academic.taller.models.queque.Queuque;
 
@@ -219,13 +222,18 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 
 		try {
 			if (!file_json.isEmpty()) {
-				java.lang.reflect.Type type = new TypeToken<HashMap<Integer, Adyacencia[]>>() {
-				}.getType();
+				/* Para evitar estas instancias de objetos o clases utilizo typeToken
+				 *Class<?> hashMapClass = HashMap.class;
+
+            // Obtener el constructor predeterminado de HashMap
+            Constructor<?> constructor = hashMapClass.getDeclaredConstructor();
+
+            // Crear una instancia de HashMap usando el constructor
+            HashMap<Integer, String> mapa = (HashMap<Integer, String>) constructor.newInstance();
+				 */
+				Type type = new TypeToken<HashMap<Integer, Adyacencia[]>>() {}.getType();
 				HashMap<Integer, Adyacencia[]> matrix = g.fromJson(file_json, type);
 
-//				System.out.println("load.... "+matrix);
-//				list = g.fromJson(data, new TypeToken<MyLinkedList<T>>(){}.getType());
-//				System.out.println(matrix.get(1));
 				dict = matrix;
 			}
 
@@ -290,50 +298,89 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 		return null;
 	}
 
+	// metodo para invocar el metodo de latitud y longitud
+	private Double getCoordenadasLabel(E obj, String metodo) throws Exception {
+		try {
+			// Declara una variable tipo method, un lang.reflect
+			Method method = null;
+			for (Method m : clazz.getMethods()) { // obtiene los metodos de la clase o objeto a serializar, itera cada
+													// metodo
+				if (m.getName().contains("get" + metodo)) { // verifica que el metodo actual tenga el atributo tal ""
+															// ejm : el en objeto Persona getIdPersona
+					method = m; // asigna lo que devuelve el getId
+					break;
+				}
+			}
+			// si no encuentra el metodo, vuelve a iterar pero esta vez eleando a la clase
+			// padre
+			if (method == null) {
+				for (Method m : clazz.getSuperclass().getMethods()) {
+					if (m.getName().contains("get" + metodo)) {
+						method = m;
+						break;
+					}
+				}
+			}
+
+			// si exite el method invoke el metodo que tiene el obj
+			if (method != null)
+				return (Double) method.invoke(obj);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Ocurrio algun error en la obtencion de getIdent de la clase, " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+
 	@Override
 	public Integer[] dfs(int idVertice) throws Exception {
-	    MyLinkedList<Integer> nodos_visitados = new MyLinkedList<>();
-	    boolean[] visitados = new boolean[nro_vertice() + 1];  // Arreglo para marcar que vertice se visitto
-	    
-	    try {
-	        dfsRecursivo(idVertice, nodos_visitados, visitados);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		MyLinkedList<Integer> nodos_visitados = new MyLinkedList<>();
+		boolean[] visitados = new boolean[nro_vertice() + 1]; // Arreglo para marcar que vertice se visitto
+//		System.out.println("longitud "+visitados.length);
+		try {
+			dfsRecursivo(idVertice, nodos_visitados, visitados);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	    return nodos_visitados.toArray();
+		return nodos_visitados.toArray();
 	}
 
-	private void dfsRecursivo(int idVertice, MyLinkedList<Integer> nodosVisitados, boolean[] visitados) throws Exception {
-	    visitados[idVertice] = true;  // Marcamos el vértice como visitado
-	    nodosVisitados.add(idVertice);  // Añadimos el vértice a la lista de nodos visitados
+	private void dfsRecursivo(int idVertice, MyLinkedList<Integer> nodosVisitados, boolean[] visitados)
+			throws Exception {
+		visitados[idVertice] = true; // Marcamos el vértice como visitado
+		nodosVisitados.add(idVertice); // Añadimos el vértice a la lista de nodos visitados
 
-	    System.out.println("Visitando vértice: " + idVertice);
+		System.out.println("Visitando vértice: " + idVertice);
+		
+		// Obtenemos las adyacencias del vértice actual
+		MyLinkedList<Adyacencia> adyacencias = adyacencia(idVertice);
 
-	    // Obtenemos las adyacencias del vértice actual
-	    MyLinkedList<Adyacencia> adyacencias = adyacencia(idVertice);
-
-	    // Recorremos todas las adyacencias del vértice actual
-	    for (Adyacencia ady : adyacencias.toArray()) {
-	        // Si el vértice destino no ha sido visitado, llamamos recursivamente
-	        if (!visitados[ady.getVertice_destino()]) {
-	            dfsRecursivo(ady.getVertice_destino(), nodosVisitados, visitados);
-	        }
-	    }
+		// Recorremos todas las adyacencias del vértice actual
+		for (Adyacencia ady : adyacencias.toArray()) {
+			// Si el vértice destino no ha sido visitado, llamamos recursivamente
+			if (!visitados[ady.getVertice_destino()]) {
+				dfsRecursivo(ady.getVertice_destino(), nodosVisitados, visitados);
+			}
+		}
+		
+		// nodosVisitados.remove(0); //
 	}
-	
+
 	public Float[] bellmanFord(int verticeOrigen) throws Exception {
 		Float n_infinity = Float.MAX_VALUE;
 		// creamos un arreglo para dist
-		Float[] dist = (Float[]) Array.newInstance(Float.class, nro_vertice()+1);
-		
+		Float[] dist = (Float[]) Array.newInstance(Float.class, nro_vertice() + 1);
+
 		for (int k = 1; k <= nro_vertice(); k++) {
-			// inicializamos con el valor infinito para 
+			// inicializamos con el valor infinito para
 			dist[k] = n_infinity;
 		}
-		
+
 		dist[verticeOrigen] = 0.0f;
-		
+
 		// hacemos el relajo de aristas, suena medio gracios
 		for (int i = 1; i <= nro_vertice(); i++) {
 			for (int j = 1; j <= nro_vertice(); j++) {
@@ -343,103 +390,134 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 					// iteramos sobre la ady
 					Adyacencia[] arr_ady = ady.toArray();
 					for (Adyacencia aux : arr_ady) {
-                        int v = aux.getVertice_destino();
-                        float weight = aux.getPeso();
-                        // Si encontramos un camino más corto hacia v, lo actualizamos
-                        System.out.println("V"+j+", v:"+v+", nVert"+nro_vertice());
-                        if (dist[j] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
-                            dist[v] = dist[j] + weight;
-                        }
-                    }
+						int v = aux.getVertice_destino();
+						float weight = aux.getPeso();
+						// Si encontramos un camino más corto hacia v, lo actualizamos
+						System.out.println("V" + j + ", v:" + v + ", nVert" + nro_vertice());
+						if (dist[j] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
+							dist[v] = dist[j] + weight;
+						}
+					}
 				}
-				
+
 			}
-			
+
 		}
-		
-		if(!tieneCicloNegativo(dist)) { // si no hay ciclos negativos retorna las distancias minimas
-			return dist;			
+
+		if (!tieneCicloNegativo(dist)) { // si no hay ciclos negativos retorna las distancias minimas
+			return dist;
 		}
-		
+
 		return null;
 	}
-	
+
 	private boolean tieneCicloNegativo(Float[] dist) {
 		// verificamos si existe ciclo negativos
-        for (int i = 1; i <= nro_vertice(); i++) {
-            MyLinkedList<Adyacencia> ady = adyacencia(i);
-            if (!ady.isEmptyLinkedList()) {
-                // Iteramos sobre las aristas de cada vértice
-                Adyacencia[] matrix_ady = ady.toArray();
-                for (Adyacencia aux : matrix_ady) {
-                    int v = aux.getVertice_destino();
-                    float weight = aux.getPeso();
-                    // Si podemos relajar una arista después de V-1 iteraciones, hay un ciclo negativo
-                    if (dist[i] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
-                        return true;
-                    }
-                }
-            }
-        }
+		for (int i = 1; i <= nro_vertice(); i++) {
+			MyLinkedList<Adyacencia> ady = adyacencia(i);
+			if (!ady.isEmptyLinkedList()) {
+				// Iteramos sobre las aristas de cada vértice
+				Adyacencia[] matrix_ady = ady.toArray();
+				for (Adyacencia aux : matrix_ady) {
+					int v = aux.getVertice_destino();
+					float weight = aux.getPeso();
+					// Si podemos relajar una arista después de V-1 iteraciones, hay un ciclo
+					// negativo
+					if (dist[i] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
-	
+
 	public Float[][] floydWarshall() {
-        int n = nro_vertice(); 
-        Float[][] dist = new Float[n + 1][n + 1];  // Matriz de distancias
+		int n = nro_vertice();
+		Float[][] dist = new Float[n + 1][n + 1]; // Matriz de distancias
 
-        // Inicializamos la matriz de distancias
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (i == j) {
-                    dist[i][j] = 0.0f;  // es la diagonal
-                } else {
-                    dist[i][j] = Float.POSITIVE_INFINITY;  // Inicializamos con infinito
-                }
-            }
-        }
+		// Inicializamos la matriz de distancias
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				if (i == j) {
+					dist[i][j] = 0.0f; // es la diagonal
+				} else {
+					dist[i][j] = Float.POSITIVE_INFINITY; // Inicializamos con infinito
+				}
+			}
+		}
 
-        // Llenamos la matriz de distancias con los pesos de las aristas
-        for (int i = 1; i <= n; i++) {
-            MyLinkedList<Adyacencia> adyacencias = adyacencia(i);
-            if (!adyacencias.isEmptyLinkedList()) {
-                Adyacencia[] arr_ady = adyacencias.toArray();
-                for (Adyacencia aux : arr_ady) {
-                    int destino = aux.getVertice_destino();
-                    float peso = aux.getPeso();
-                    dist[i][destino] = peso;  // Asignamos el peso calculado
-                }
-            }
-        }
+		// Llenamos la matriz de distancias con los pesos de las aristas
+		for (int i = 1; i <= n; i++) {
+			MyLinkedList<Adyacencia> adyacencias = adyacencia(i);
+			if (!adyacencias.isEmptyLinkedList()) {
+				Adyacencia[] arr_ady = adyacencias.toArray();
+				for (Adyacencia aux : arr_ady) {
+					int destino = aux.getVertice_destino();
+					float peso = aux.getPeso();
+					dist[i][destino] = peso; // Asignamos el peso calculado
+				}
+			}
+		}
 
+		for (int k = 1; k <= n; k++) {
+			for (int i = 1; i <= n; i++) {
+				for (int j = 1; j <= n; j++) {
+					// Si el camino i -> k -> j es más corto que el camino directo i -> j
+					if (dist[i][j] > dist[i][k] + dist[k][j]) {
+						dist[i][j] = dist[i][k] + dist[k][j];
+					}
+				}
+			}
+		}
 
-        for (int k = 1; k <= n; k++) {
-            for (int i = 1; i <= n; i++) {
-                for (int j = 1; j <= n; j++) {
-                    // Si el camino i -> k -> j es más corto que el camino directo i -> j
-                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
-                        dist[i][j] = dist[i][k] + dist[k][j];
-                    }
-                }
-            }
-        }
+		return dist; // Devolvemos la matriz de distancias más cortas
+	}
 
-        return dist;  // Devolvemos la matriz de distancias más cortas
-    }
-    
-    // Método para mostrar la matriz de distancias
-    public void imprimirDistancia(Float[][] dist) {
-        int n = dist.length - 1;  // Ajustamos el número de vértices
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (dist[i][j] == Float.POSITIVE_INFINITY) {
-                    System.out.print("∞ ");
-                } else {
-                    System.out.print(dist[i][j] + " ");
-                }
-            }
-            System.out.println();
-        }
-    }
+	// Método para mostrar la matriz de distancias
+	public void imprimirDistancia(Float[][] dist) {
+		int n = dist.length - 1; // Ajustamos el número de vértices
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				if (dist[i][j] == Float.POSITIVE_INFINITY) {
+					System.out.print("∞ ");
+				} else {
+					System.out.print(dist[i][j] + " ");
+				}
+			}
+			System.out.println();
+		}
+	}
+
+//	@Override
+	public Float calculaDistanciaGeodesica(E v1, E v2) throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("Para calcular la distancia Objeto v1: "+v1+", v2: "+v2);
+		Double latitud_X = getCoordenadasLabel(v1, "Latitud");
+		Double latitud_Y = getCoordenadasLabel(v2, "Latitud");
+
+		Double longitud_X = getCoordenadasLabel(v1, "Longitud");
+		Double longitud_Y = getCoordenadasLabel(v2, "Longitud");
+
+		double lat1Rad = Math.toRadians(latitud_X.doubleValue());
+		double lon1Rad = Math.toRadians(longitud_X.doubleValue());
+		double lat2Rad = Math.toRadians(latitud_Y.doubleValue());
+		double lon2Rad = Math.toRadians(longitud_Y.doubleValue());
+
+		// Diferencias de latitud y longitud
+		double deltaLat = lat2Rad - lat1Rad;
+		double deltaLon = lon2Rad - lon1Rad;
+
+		// Fórmula de Haversine, que mide distancia entre dos puntos de forma geodesica
+		double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+				+ Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		
+		// Distancia en kilómetros, 6371.0 equivale al radio del planeta, resultado en km
+        Double distancia = (double) (Math.round((6371.0 * c)*100.0) / 100.0);
+        Float floatValue = Float.valueOf(distancia.floatValue());
+
+		return floatValue;
+	}
 
 }
