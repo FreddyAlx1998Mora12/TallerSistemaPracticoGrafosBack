@@ -3,10 +3,6 @@
     {
       "vertice_destino": 2,
       "peso": 0.0
-    },
-    {
-      "vertice_destino": 6,
-      "peso": 17456.54
     }
   ],
   "2": [
@@ -15,8 +11,8 @@
       "peso": 17458.27
     },
     {
-      "vertice_destino": 8,
-      "peso": 17456.81
+      "vertice_destino": 5,
+      "peso": 17458.34
     }
   ],
   "3": [
@@ -25,8 +21,8 @@
       "peso": 2.74
     },
     {
-      "vertice_destino": 8,
-      "peso": 3.85
+      "vertice_destino": 9,
+      "peso": 0.87
     }
   ],
   "4": [
@@ -35,28 +31,20 @@
       "peso": 1.45
     },
     {
-      "vertice_destino": 6,
-      "peso": 3.02
+      "vertice_destino": 8,
+      "peso": 2.97
     }
   ],
   "5": [
     {
       "vertice_destino": 6,
       "peso": 1.95
-    },
-    {
-      "vertice_destino": 4,
-      "peso": 1.45
     }
   ],
   "6": [
     {
       "vertice_destino": 7,
       "peso": 2.13
-    },
-    {
-      "vertice_destino": 9,
-      "peso": 3.8
     }
   ],
   "7": [
@@ -65,8 +53,8 @@
       "peso": 1.0
     },
     {
-      "vertice_destino": 5,
-      "peso": 2.71
+      "vertice_destino": 2,
+      "peso": 17457.56
     }
   ],
   "8": [
@@ -75,8 +63,8 @@
       "peso": 4.68
     },
     {
-      "vertice_destino": 4,
-      "peso": 2.97
+      "vertice_destino": 7,
+      "peso": 1.0
     }
   ],
   "9": [
@@ -85,14 +73,14 @@
       "peso": 2.08
     },
     {
-      "vertice_destino": 6,
-      "peso": 3.8
+      "vertice_destino": 3,
+      "peso": 0.87
     }
   ],
   "10": [
     {
-      "vertice_destino": 3,
-      "peso": 2.95
+      "vertice_destino": 4,
+      "peso": 4.5
     }
   ]
 }

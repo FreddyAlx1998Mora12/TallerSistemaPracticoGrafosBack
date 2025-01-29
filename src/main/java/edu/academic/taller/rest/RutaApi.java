@@ -57,7 +57,6 @@ public class RutaApi {
 			ruta.setDescripcion(request.get(("descripcion")).toString());
 			ruta.setLatitud(Double.valueOf(request.get("lat").toString()));
 			ruta.setLongitud(Double.valueOf(request.get("long").toString()));
-			
 
 			// Capturar la lista de rutas (Si en caso tiene)
 //		System.out.println(request.get("rutas").toString());
@@ -97,7 +96,7 @@ public class RutaApi {
 		ruta.setLongitud((double) request.get(("longitud")));
 		try {
 			rutServic.setRuta(ruta);
-			rutServic.update(ruta, idE-1);
+			rutServic.update(ruta, idE - 1);
 
 			return Response.ok(res).build();
 //			return Response.ok(res).build(); 
@@ -131,7 +130,7 @@ public class RutaApi {
 		res.put("data", "Dato eliminado correctamente");
 		return Response.ok(res).build();
 	}
-	
+
 	@Path("/search/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -194,18 +193,18 @@ public class RutaApi {
 			System.out.println("Grafo es etiquetado?: " + grafo.isLabelGraph());
 
 			// conectamos todos los vertices
-	        for (int i = 0; i < arr_est.length - 1; i++) {
-	            grafo.insertEdgeLabel(arr_est[i], arr_est[i + 1], rs.calculoDistancia(arr_est[i], arr_est[i + 1]));
-	        }
+			for (int i = 0; i < arr_est.length - 1; i++) {
+				grafo.insertEdgeLabel(arr_est[i], arr_est[i + 1], rs.calculoDistancia(arr_est[i], arr_est[i + 1]));
+			}
 
-	        // generamos aristas aleatorias adicionales
-	        for (int i = 0; i < arr_est.length; i++) {
-	            int n_r = r.nextInt(1, arr_est.length - 1);
-	            if (n_r != i) { 
-	                grafo.insertEdgeLabel(arr_est[i], arr_est[n_r], rs.calculoDistancia(arr_est[i], arr_est[n_r]));
-	            }
-	        }
-			
+			// generamos aristas aleatorias adicionales
+			for (int i = 0; i < arr_est.length; i++) {
+				int n_r = r.nextInt(1, arr_est.length - 1);
+				if (n_r != i) {
+					grafo.insertEdgeLabel(arr_est[i], arr_est[n_r], rs.calculoDistancia(arr_est[i], arr_est[n_r]));
+				}
+			}
+
 			grafo.drawGraph();
 			map.put("data", "Grafo creado correctmente.");
 		} catch (Exception e) {
@@ -222,67 +221,140 @@ public class RutaApi {
 
 		return Response.ok(map).build();
 	}
+
+	// POST
+	@Path("/load/graph")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response cargarGrafo() throws Exception {
+		RutaService rs = new RutaService();
+		// Integer es el id del vertice, Adyacencia son los objetos a las que tiene
+		// adyacencia el ID
+		HashMap<Integer, Adyacencia[]> mapGraph;
+		Map map = new HashMap<>();
+
+		try {
+			// Creamos una instancia de graph y empezamos a construir
+			GraphLabelDirect<Ruta> grafo = new GraphLabelDirect(rutServic.listAll().getLength(), Ruta.class);
+			System.out.println("Grafo antes de construirse, esta etiquetado" + grafo.isLabelGraph());
+
+			// Arreglo de las rutas necesarios
+			Ruta[] arr_rut = (Ruta[]) rutServic.listAll().toArray();
+
+			// Dict del load graph que existe en
+			mapGraph = grafo.loadGraph();
+
+			// resultado 9 ->
+			System.out.println("longitud grafo.. nro vertices " + grafo.nro_vertice());
+			System.out.println("longitud dict.." + mapGraph.size());
+
+			// iteramos para etiquetar todos los objetos ruta
+			for (int i = 1; i <= arr_rut.length; i++) {
+				grafo.labelVertice(i, arr_rut[i - 1]);
+			}
+
+			// recordemos que el id es el vertice origen
+			mapGraph.forEach((id, adyacencias) -> {
+//		            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
+				for (Adyacencia ady : adyacencias) {
+					// etiqueramos el grafo
+					try {
+						grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()),
+								rs.calculoDistancia(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino())));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			// grafo construido, ejecutamos
+			// testeamos si esta el grafo construido
+			System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
+
+			// implementar logica de bpp
+			Integer[] nodos_dfs = grafo.dfs(3);
+
+			System.out.println("Nodos visitados con algoritmo dfs");
+			// mostramos las etiquetas
+			for (int i = 0; i < nodos_dfs.length - 1; i++) {
+				System.out.println("." + nodos_dfs[i]);
+				System.out.println("-> " + grafo.getLabel(nodos_dfs[i]).getDescripcion());
+			}
+
+			map.put("data", "Grafo cargado correctmente.");
+		} catch (Exception e) {
+			// TODO: handle exception
+			map.put("error", e.getLocalizedMessage());
+			map.put("causa", e.getCause());
+			e.printStackTrace();
+		}
+		// Creamos una instancia de grafo, un grafo dirigido con 5 vertices
+
+//				System.out.println("Imprime grafo...\n"+grafo.toString());
+
+		map.put("msg", "OK");
+
+		return Response.ok(map).build();
+	}
 	
 	// POST
-		@Path("/load/graph")
+		@Path("/alg/floyd")
 		@GET
 		@Produces(MediaType.APPLICATION_JSON)
-		public Response cargarGrafo() throws Exception {
+		public Response algoritmoFloyd() throws Exception {
 			RutaService rs = new RutaService();
-			// Integer es el id del vertice, Adyacencia son los objetos a las que tiene adyacencia el ID
+			// Integer es el id del vertice, Adyacencia son los objetos a las que tiene
+			// adyacencia el ID
 			HashMap<Integer, Adyacencia[]> mapGraph;
 			Map map = new HashMap<>();
 
 			try {
 				// Creamos una instancia de graph y empezamos a construir
 				GraphLabelDirect<Ruta> grafo = new GraphLabelDirect(rutServic.listAll().getLength(), Ruta.class);
-				System.out.println("Grafo antes de construirse, esta etiquetado"+grafo.isLabelGraph());
-				
+				System.out.println("Grafo antes de construirse, esta etiquetado" + grafo.isLabelGraph());
+
 				// Arreglo de las rutas necesarios
 				Ruta[] arr_rut = (Ruta[]) rutServic.listAll().toArray();
- 				
-				// Dict del load graph que existe en 
+
+				// Dict del load graph que existe en
 				mapGraph = grafo.loadGraph();
-				
-				// resultado 9 -> 
-				System.out.println("longitud grafo.. nro vertices "+grafo.nro_vertice());
-				System.out.println("longitud dict.."+mapGraph.size());
-				
-				// iteramos para etiquetar todos los objetos  ruta
+
+				// resultado 9 ->
+				System.out.println("longitud grafo.. nro vertices " + grafo.nro_vertice());
+				System.out.println("longitud dict.." + mapGraph.size());
+
+				// iteramos para etiquetar todos los objetos ruta
 				for (int i = 1; i <= arr_rut.length; i++) {
 					grafo.labelVertice(i, arr_rut[i - 1]);
 				}
-				
+
 				// recordemos que el id es el vertice origen
 				mapGraph.forEach((id, adyacencias) -> {
-//		            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
-		            for (Adyacencia ady : adyacencias) {
-		            	// etiqueramos el grafo
+//			            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
+					for (Adyacencia ady : adyacencias) {
+						// etiqueramos el grafo
 						try {
-							grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()), 
+							grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()),
 									rs.calculoDistancia(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino())));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
-		        });
-				
-				// grafo construido, ejecutamos 
+				});
+
+				// grafo construido, ejecutamos
 				// testeamos si esta el grafo construido
-				System.out.println("Grafo construido, esta etiquetado? "+grafo.isLabelGraph());
-				
+				System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
+
 				// implementar logica de bpp
-				Integer[] nodos_dfs = grafo.dfs(3);
-
-				System.out.println("Nodos visitados con algoritmo dfs");
-				// mostramos las etiquetas 
-				for (int i = 0; i < nodos_dfs.length-1; i++) {
-					System.out.println("."+nodos_dfs[i]);
-					System.out.println("-> "+grafo.getLabel(nodos_dfs[i]).getDescripcion());
+				Float[] dist = grafo.bellmanFord(1);
+				if (dist == null) {
+					map.put("data", "Grafo con ciclo negativo.");
+				}else {
+					System.out.println("long dit"+dist);
+					map.put("data", "Grafo no contiene ciclo negativo.");					
 				}
-				
 
-				map.put("data", "Grafo cargado correctmente.");
 			} catch (Exception e) {
 				// TODO: handle exception
 				map.put("error", e.getLocalizedMessage());
@@ -291,7 +363,7 @@ public class RutaApi {
 			}
 			// Creamos una instancia de grafo, un grafo dirigido con 5 vertices
 
-//				System.out.println("Imprime grafo...\n"+grafo.toString());
+//					System.out.println("Imprime grafo...\n"+grafo.toString());
 
 			map.put("msg", "OK");
 

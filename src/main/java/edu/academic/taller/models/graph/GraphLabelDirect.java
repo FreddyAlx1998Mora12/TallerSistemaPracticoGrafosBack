@@ -321,6 +321,67 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 	        }
 	    }
 	}
-
+	
+	public Float[] bellmanFord(int verticeOrigen) throws Exception {
+		Float n_infinity = Float.MAX_VALUE;
+		// creamos un arreglo para dist
+		Float[] dist = (Float[]) Array.newInstance(Float.class, nro_vertice()+1);
+		
+		for (int k = 1; k <= nro_vertice(); k++) {
+			// inicializamos con el valor infinito para 
+			dist[k] = n_infinity;
+		}
+		
+		dist[verticeOrigen] = 0.0f;
+		
+		// hacemos el relajo de aristas, suena medio gracios
+		for (int i = 1; i <= nro_vertice(); i++) {
+			for (int j = 1; j <= nro_vertice(); j++) {
+				// obtenemos la lista de adyacencia de j
+				MyLinkedList<Adyacencia> ady = adyacencia(j);
+				if (!ady.isEmptyLinkedList()) {
+					// iteramos sobre la ady
+					Adyacencia[] arr_ady = ady.toArray();
+					for (Adyacencia aux : arr_ady) {
+                        int v = aux.getVertice_destino();
+                        float weight = aux.getPeso();
+                        // Si encontramos un camino más corto hacia v, lo actualizamos
+                        System.out.println("V"+j+", v:"+v+", nVert"+nro_vertice());
+                        if (dist[j] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
+                            dist[v] = dist[j] + weight;
+                        }
+                    }
+				}
+				
+			}
+			
+		}
+		
+		if(!tieneCicloNegativo(dist)) { // si no hay ciclos negativos retorna las distancias minimas
+			return dist;			
+		}
+		
+		return null;
+	}
+	
+	private boolean tieneCicloNegativo(Float[] dist) {
+		// verificamos si existe ciclo negativos
+        for (int i = 1; i <= nro_vertice(); i++) {
+            MyLinkedList<Adyacencia> ady = adyacencia(i);
+            if (!ady.isEmptyLinkedList()) {
+                // Iteramos sobre las aristas de cada vértice
+                Adyacencia[] matrix_ady = ady.toArray();
+                for (Adyacencia aux : matrix_ady) {
+                    int v = aux.getVertice_destino();
+                    float weight = aux.getPeso();
+                    // Si podemos relajar una arista después de V-1 iteraciones, hay un ciclo negativo
+                    if (dist[i] != Float.POSITIVE_INFINITY && dist[i] + weight < dist[v]) {
+                        return true;
+                    }
+                }
+            }
+        }
+		return false;
+	}
 
 }
