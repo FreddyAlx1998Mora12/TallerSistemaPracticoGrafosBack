@@ -296,78 +296,151 @@ public class RutaApi {
 
 		return Response.ok(map).build();
 	}
-	
+
 	// POST
-		@Path("/alg/floyd")
-		@GET
-		@Produces(MediaType.APPLICATION_JSON)
-		public Response algoritmoFloyd() throws Exception {
-			RutaService rs = new RutaService();
-			// Integer es el id del vertice, Adyacencia son los objetos a las que tiene
-			// adyacencia el ID
-			HashMap<Integer, Adyacencia[]> mapGraph;
-			Map map = new HashMap<>();
+	@Path("/alg/bell")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response algoritmoBellman() throws Exception {
+		RutaService rs = new RutaService();
+		// Integer es el id del vertice, Adyacencia son los objetos a las que tiene
+		// adyacencia el ID
+		HashMap<Integer, Adyacencia[]> mapGraph;
+		Map map = new HashMap<>();
 
-			try {
-				// Creamos una instancia de graph y empezamos a construir
-				GraphLabelDirect<Ruta> grafo = new GraphLabelDirect(rutServic.listAll().getLength(), Ruta.class);
-				System.out.println("Grafo antes de construirse, esta etiquetado" + grafo.isLabelGraph());
+		try {
+			// Creamos una instancia de graph y empezamos a construir
+			GraphLabelDirect<Ruta> grafo = new GraphLabelDirect(rutServic.listAll().getLength(), Ruta.class);
+			System.out.println("Grafo antes de construirse, esta etiquetado" + grafo.isLabelGraph());
 
-				// Arreglo de las rutas necesarios
-				Ruta[] arr_rut = (Ruta[]) rutServic.listAll().toArray();
+			// Arreglo de las rutas necesarios
+			Ruta[] arr_rut = (Ruta[]) rutServic.listAll().toArray();
 
-				// Dict del load graph que existe en
-				mapGraph = grafo.loadGraph();
+			// Dict del load graph que existe en
+			mapGraph = grafo.loadGraph();
 
-				// resultado 9 ->
-				System.out.println("longitud grafo.. nro vertices " + grafo.nro_vertice());
-				System.out.println("longitud dict.." + mapGraph.size());
+			// resultado 9 ->
+			System.out.println("longitud grafo.. nro vertices " + grafo.nro_vertice());
+			System.out.println("longitud dict.." + mapGraph.size());
 
-				// iteramos para etiquetar todos los objetos ruta
-				for (int i = 1; i <= arr_rut.length; i++) {
-					grafo.labelVertice(i, arr_rut[i - 1]);
-				}
-
-				// recordemos que el id es el vertice origen
-				mapGraph.forEach((id, adyacencias) -> {
-//			            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
-					for (Adyacencia ady : adyacencias) {
-						// etiqueramos el grafo
-						try {
-							grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()),
-									rs.calculoDistancia(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino())));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
-
-				// grafo construido, ejecutamos
-				// testeamos si esta el grafo construido
-				System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
-
-				// implementar logica de bpp
-				Float[] dist = grafo.bellmanFord(1);
-				if (dist == null) {
-					map.put("data", "Grafo con ciclo negativo.");
-				}else {
-					System.out.println("long dit"+dist);
-					map.put("data", "Grafo no contiene ciclo negativo.");					
-				}
-
-			} catch (Exception e) {
-				// TODO: handle exception
-				map.put("error", e.getLocalizedMessage());
-				map.put("causa", e.getCause());
-				e.printStackTrace();
+			// iteramos para etiquetar todos los objetos ruta
+			for (int i = 1; i <= arr_rut.length; i++) {
+				grafo.labelVertice(i, arr_rut[i - 1]);
 			}
-			// Creamos una instancia de grafo, un grafo dirigido con 5 vertices
+
+			// recordemos que el id es el vertice origen
+			mapGraph.forEach((id, adyacencias) -> {
+//			            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
+				for (Adyacencia ady : adyacencias) {
+					// etiqueramos el grafo
+					try {
+						grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()),
+								rs.calculoDistancia(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino())));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			// grafo construido, ejecutamos
+			// testeamos si esta el grafo construido
+			System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
+
+			// implementar logica de bpp
+			Float[] dist = grafo.bellmanFord(1);
+			if (dist == null) {
+				map.put("data", "Grafo con ciclo negativo.");
+			} else {
+				System.out.println("long dit" + dist);
+				map.put("data", "Grafo no contiene ciclo negativo.");
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			map.put("error", e.getLocalizedMessage());
+			map.put("causa", e.getCause());
+			e.printStackTrace();
+		}
+		// Creamos una instancia de grafo, un grafo dirigido con 5 vertices
 
 //					System.out.println("Imprime grafo...\n"+grafo.toString());
 
-			map.put("msg", "OK");
+		map.put("msg", "OK");
 
-			return Response.ok(map).build();
+		return Response.ok(map).build();
+	}
+	
+	@Path("/alg/floyd")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response algoritmoFloyd() throws Exception {
+		RutaService rs = new RutaService();
+		// Integer es el id del vertice, Adyacencia son los objetos a las que tiene
+		// adyacencia el ID
+		HashMap<Integer, Adyacencia[]> mapGraph;
+		Map map = new HashMap<>();
+
+		try {
+			// Creamos una instancia de graph y empezamos a construir
+			GraphLabelDirect<Ruta> grafo = new GraphLabelDirect(rutServic.listAll().getLength(), Ruta.class);
+			System.out.println("Grafo antes de construirse, esta etiquetado" + grafo.isLabelGraph());
+
+			// Arreglo de las rutas necesarios
+			Ruta[] arr_rut = (Ruta[]) rutServic.listAll().toArray();
+
+			// Dict del load graph que existe en
+			mapGraph = grafo.loadGraph();
+
+			// resultado 9 ->
+			System.out.println("longitud grafo.. nro vertices " + grafo.nro_vertice());
+			System.out.println("longitud dict.." + mapGraph.size());
+
+			// iteramos para etiquetar todos los objetos ruta
+			for (int i = 1; i <= arr_rut.length; i++) {
+				grafo.labelVertice(i, arr_rut[i - 1]);
+			}
+
+			// recordemos que el id es el vertice origen
+			mapGraph.forEach((id, adyacencias) -> {
+//			            System.out.println("Clave: " + id + ", Valor: " + adyacencias);
+				for (Adyacencia ady : adyacencias) {
+					// etiqueramos el grafo
+					try {
+						grafo.insertEdgeLabel(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino()),
+								rs.calculoDistancia(grafo.getLabel(id), grafo.getLabel(ady.getVertice_destino())));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			// grafo construido, ejecutamos
+			// testeamos si esta el grafo construido
+			System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
+
+			// implementar logica de bpp
+			Float[][] dist = grafo.floydWarshall();
+			grafo.imprimirDistancia(dist);
+			if (dist == null) {
+				map.put("data", "Grafo con ciclo negativo.");
+			} else {
+				System.out.println("long dit" + dist);
+				map.put("data", "Grafo no contiene ciclo negativo.");
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			map.put("error", e.getLocalizedMessage());
+			map.put("causa", e.getCause());
+			e.printStackTrace();
 		}
+		// Creamos una instancia de grafo, un grafo dirigido con 5 vertices
+
+//					System.out.println("Imprime grafo...\n"+grafo.toString());
+
+		map.put("msg", "OK");
+
+		return Response.ok(map).build();
+	}
 
 }

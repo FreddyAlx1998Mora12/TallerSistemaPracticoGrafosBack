@@ -383,5 +383,63 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
         }
 		return false;
 	}
+	
+	public Float[][] floydWarshall() {
+        int n = nro_vertice(); 
+        Float[][] dist = new Float[n + 1][n + 1];  // Matriz de distancias
+
+        // Inicializamos la matriz de distancias
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i == j) {
+                    dist[i][j] = 0.0f;  // es la diagonal
+                } else {
+                    dist[i][j] = Float.POSITIVE_INFINITY;  // Inicializamos con infinito
+                }
+            }
+        }
+
+        // Llenamos la matriz de distancias con los pesos de las aristas
+        for (int i = 1; i <= n; i++) {
+            MyLinkedList<Adyacencia> adyacencias = adyacencia(i);
+            if (!adyacencias.isEmptyLinkedList()) {
+                Adyacencia[] arr_ady = adyacencias.toArray();
+                for (Adyacencia aux : arr_ady) {
+                    int destino = aux.getVertice_destino();
+                    float peso = aux.getPeso();
+                    dist[i][destino] = peso;  // Asignamos el peso calculado
+                }
+            }
+        }
+
+
+        for (int k = 1; k <= n; k++) {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    // Si el camino i -> k -> j es más corto que el camino directo i -> j
+                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        return dist;  // Devolvemos la matriz de distancias más cortas
+    }
+    
+    // Método para mostrar la matriz de distancias
+    public void imprimirDistancia(Float[][] dist) {
+        int n = dist.length - 1;  // Ajustamos el número de vértices
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (dist[i][j] == Float.POSITIVE_INFINITY) {
+                    System.out.print("∞ ");
+                } else {
+                    System.out.print(dist[i][j] + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
 
 }
