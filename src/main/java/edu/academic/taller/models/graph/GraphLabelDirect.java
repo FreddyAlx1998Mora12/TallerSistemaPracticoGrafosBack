@@ -6,8 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import edu.academic.taller.DAOs.InterfaceGraphDao;
 import edu.academic.taller.exceptions.LabelException;
 import edu.academic.taller.models.list.MyLinkedList;
+import edu.academic.taller.models.queque.Queuque;
 
 public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDao<E> {
 
@@ -25,6 +26,9 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 	private Class<E> clazz;
 
 	public static String filePath = "src/main/resources/graphs/"; // para almacenar los archivos json
+	public static String filePath2 = "/home/freddy/Documentos/ProyectosDesarrollo/Python/SistemaTaller_RutaTransporte_Grafos/templates/components/lineas_rutas/"; // para
+																																									// mostrar
+																																									// grafo
 
 	public GraphLabelDirect(Integer n_vert, Class<E> claseSerializ) {
 		super(n_vert);
@@ -47,6 +51,14 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 	public void insertEdgeLabel(E v1, E v2) throws LabelException, Exception {
 		if (isLabelGraph()) {
 			this.add_edge(getVerticeLabel(v1), getVerticeLabel(v2), Float.NaN);
+		} else {
+			throw new LabelException("Grafo para insertar no etiquetado");
+		}
+	}
+
+	public void insertEdgeLabel(E v1, E v2, Float weigth) throws LabelException, Exception {
+		if (isLabelGraph()) {
+			this.add_edge(getVerticeLabel(v1), getVerticeLabel(v2), weigth);
 		} else {
 			throw new LabelException("Grafo para insertar no etiquetado");
 		}
@@ -119,29 +131,25 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 		return grafo;
 	}
 
-	// Realizar aqui el metodo de dibujar grafo, y cargar grafo
+	// Realizar aqui el metodo de dibujar grafo
 	@Override
 	public void drawGraph() throws Exception {
 		// TODO Auto-generated method stub
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb2 = new StringBuilder(); // para crear el script
+		sb2.append("var nodes = new vis.DataSet([\n");
+
 		GsonBuilder gb = new GsonBuilder();
 		Gson g = gb.setPrettyPrinting().create();
-
-		sb.append("{\"Vertices\": [\n");
+		HashMap<Integer, Adyacencia[]> graphMap = new HashMap<>(); // para guardar en json
 
 		// iteramos el hashmap
 		for (int i = 1; i <= nro_vertice(); i++) {
-			sb.append("{\n \"id\": " + i + ",\n\"label\" : ");
-			sb.append(g.toJson(getLabel(i)) + "\n},\n");
+			sb2.append("{ id:" + i + ", label: \"" + getDescripcionLabel(getLabel(i)) + "\"},\n");
 		}
-
-		// termina iteracion de vertices, se elimina la ultima coma
-		if (sb.charAt(sb.length() - 2) == ',') {
-			sb.delete(sb.length() - 2, sb.length());
-		}
+		sb2.append("\n]);\n");
 
 		// Adyacencias
-		sb.append("],\n\"Edges\": [\n");
+		sb2.append("var edges = new vis.DataSet([\n");
 
 		for (int i = 1; i <= nro_vertice(); i++) {
 			MyLinkedList<Adyacencia> ady = adyacencia(i);
@@ -151,94 +159,82 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 
 				for (int j = 0; j < matrix_ady.length; j++) {
 					Adyacencia aux = matrix_ady[j];
-					sb.append("{ \"from\" : " + i + ", \"to\" : " + aux.getVertice_destino() + "},\n");
+					sb2.append("{ from: " + i + ", to: " + aux.getVertice_destino() + ", label: \"" + aux.getPeso()
+							+ "\"},\n");
 				}
 
 			}
 
 		}
-		// termina iteracion de vertices, se elimina la ultima coma
-		if (sb.charAt(sb.length() - 2) == ',') {
-			sb.delete(sb.length() - 2, sb.length());
-		}
+		sb2.append("\n]);\n");
 
-		sb.append("\n]\n}");
+		sb2.append("var container = document.getElementById(\"mynetwork\");\n" + "      var data = {\n"
+				+ "        nodes: nodes,\n" + "        edges: edges,\n" + "      };\n" + "      var options = {};\n"
+				+ "      var network = new vis.Network(container, data, options);");
+
+		// AQUI CREA EL JSON PARA EL LOAD
+		for (int i = 1; i <= nro_vertice(); i++) {
+			MyLinkedList<Adyacencia> ady = adyacencia(i);
+			if (!ady.isEmptyLinkedList()) {
+				Adyacencia[] matrix_ady = ady.toArray();
+				graphMap.put(i, matrix_ady); // Agregar al mapa
+			}
+		}
+		String json = g.toJson(graphMap);
 
 		// 1. Crear un Objeto File o Archivo para almacenar los datos
 		File file = new File(filePath + "Grafo_" + clazz.getSimpleName() + ".json");
+		File file2 = new File(filePath2 + "graph.js");
 		// 2. Objeto como tipo cursor para la escritura
 		FileWriter fw = new FileWriter(file);
-		try { // Usamos try-with-resources para cerrar automáticamente el FileWriter
-			fw.write(sb.toString());
+		FileWriter fw2 = new FileWriter(file2);
+		try {
+			fw.write(json);
 			fw.flush();
 			fw.close();
+
+			fw2.write(sb2.toString());
+			fw2.flush();
+			fw2.close();
 		} catch (IOException e) {
 			System.out.println("Error al escribir en el archivo: " + e.getMessage());
 		}
 	}
 
 	@Override
-	public String loadGraph() throws FileNotFoundException, Exception {
-		// TODO Auto-generated method stub
+	public HashMap<Integer, Adyacencia[]> loadGraph() throws FileNotFoundException, Exception {
 		// Traer la data para deserializar
+
 		System.out.println("Intentando deserializar metodo loadGraph GraphLabelDirect...");
 		String file_json = readGraph();
-		
+		HashMap<Integer, Adyacencia[]> dict = null;
+		GsonBuilder gb = new GsonBuilder();
+		Gson g = gb.setPrettyPrinting().create();
+
+		// Si el archivo no existe
 		if (file_json.isEmpty()) {
-			throw new FileNotFoundException("El archivo esta vacio o no se pudo leer, verifique que el archivo exista o contenga informacion.");
+			throw new FileNotFoundException(
+					"El archivo esta vacio o no se pudo leer, verifique que el archivo exista o contenga informacion.");
 		}
-		
+
 		try {
-			// Crear una instancia de HashMap o dict
-			// intentar deserializar lo que contiene VERTICES
-			// luego leer lo que dice nodos, y conectar segun el valor que esta
-			Gson gson = new Gson();
-            // Deserializar el JSON a un mapa que contenga los vértices y las aristas
-			TypeToken<Map<String, MyLinkedList<Map<String, Object>>>> token = new TypeToken<Map<String, MyLinkedList<Map<String, Object>>>>() {};
-            Map<String, MyLinkedList<Map<String, Object>>> graphData = gson.fromJson(file_json, token.getType());
+			if (!file_json.isEmpty()) {
+				java.lang.reflect.Type type = new TypeToken<HashMap<Integer, Adyacencia[]>>() {
+				}.getType();
+				HashMap<Integer, Adyacencia[]> matrix = g.fromJson(file_json, type);
 
-            // Extraer los vértices y las aristas
-            MyLinkedList<Map<String, Object>> vertices = graphData.get("Vertices");
-            MyLinkedList<Map<String, Object>> edges = graphData.get("Edges");
-            
-            System.out.println("Intentando deserializar lo que contiene vertices..."+vertices.getClass().getTypeName());
-            System.out.println("Intentando deserializar lo que contiene vertices..."+edges.getClass().getTypeName());
-            
-            // Crear un HashMap para almacenar los vértices
-            HashMap<E, Integer> verticesMap = new HashMap<>();
+//				System.out.println("load.... "+matrix);
+//				list = g.fromJson(data, new TypeToken<MyLinkedList<T>>(){}.getType());
+//				System.out.println(matrix.get(1));
+				dict = matrix;
+			}
 
-            // Reconstruir los vértices a partir del JSON
-            /*for (Map<String, Object> vertex : vertices) {
-                int id = ((Double) vertex.get("id")).intValue();
-                // Deserializar la etiqueta (label) como un objeto Estacion
-                E estacion = gson.fromJson(gson.toJson(vertex.get("label")), E);
-                // Añadir al HashMap
-                verticesMap.put(estacion, id);
-            }
-
-            // Crear el grafo
-            for (Map<String, Object> edge : edges) {
-                int from = ((Double) edge.get("from")).intValue();
-                int to = ((Double) edge.get("to")).intValue();
-
-                // Aquí puedes reconstruir la relación de aristas entre los vértices
-                // Por ejemplo, podrías tener un HashMap para almacenar las conexiones de los vértices
-                System.out.println("Conexión de " + from + " a " + to);
-            }
-
-            // Imprimir los vértices para ver que se cargaron correctamente
-            verticesMap.forEach((etiqueta, id) -> {
-                System.out.println("Estación: " + etiqueta.getCodigoEstacion() + ", ID: " + id);
-            });*/
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
-		
-		
-		return null;
+
+		return dict;
 	}
 
 	@Override
@@ -256,5 +252,75 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 		in.close(); // cerrar siempre
 		return sb.toString().trim();
 	}
+
+	// metodo que retorna un valor int (obtiene el identificador del objeto),
+	// parametro objeto tipo dato generico T
+	private String getDescripcionLabel(E obj) throws Exception {
+		try {
+			// Declara una variable tipo method, un lang.reflect
+			Method method = null;
+			for (Method m : clazz.getMethods()) { // obtiene los metodos de la clase o objeto a serializar, itera cada
+													// metodo
+				if (m.getName().contains("getDescripcion")) { // verifica que el metodo actual tenga el atributo tal ""
+																// ejm : el en objeto Persona getIdPersona
+					method = m; // asigna lo que devuelve el getId
+					break;
+				}
+			}
+			// si no encuentra el metodo, vuelve a iterar pero esta vez eleando a la clase
+			// padre
+			if (method == null) {
+				for (Method m : clazz.getSuperclass().getMethods()) {
+					if (m.getName().contains("getDescripcion")) {
+						method = m;
+						break;
+					}
+				}
+			}
+
+			// si exite el method invoke el metodo que tiene el obj
+			if (method != null)
+				return (String) method.invoke(obj);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Ocurrio algun error en la obtencion de getIdent de la clase, " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+
+	@Override
+	public Integer[] dfs(int idVertice) throws Exception {
+	    MyLinkedList<Integer> nodos_visitados = new MyLinkedList<>();
+	    boolean[] visitados = new boolean[nro_vertice() + 1];  // Arreglo para marcar que vertice se visitto
+	    
+	    try {
+	        dfsRecursivo(idVertice, nodos_visitados, visitados);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return nodos_visitados.toArray();
+	}
+
+	private void dfsRecursivo(int idVertice, MyLinkedList<Integer> nodosVisitados, boolean[] visitados) throws Exception {
+	    visitados[idVertice] = true;  // Marcamos el vértice como visitado
+	    nodosVisitados.add(idVertice);  // Añadimos el vértice a la lista de nodos visitados
+
+	    System.out.println("Visitando vértice: " + idVertice);
+
+	    // Obtenemos las adyacencias del vértice actual
+	    MyLinkedList<Adyacencia> adyacencias = adyacencia(idVertice);
+
+	    // Recorremos todas las adyacencias del vértice actual
+	    for (Adyacencia ady : adyacencias.toArray()) {
+	        // Si el vértice destino no ha sido visitado, llamamos recursivamente
+	        if (!visitados[ady.getVertice_destino()]) {
+	            dfsRecursivo(ady.getVertice_destino(), nodosVisitados, visitados);
+	        }
+	    }
+	}
+
 
 }

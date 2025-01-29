@@ -1,6 +1,9 @@
 package edu.academic.taller.DAOs;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+
+import edu.academic.taller.models.graph.Adyacencia;
 
 public interface InterfaceGraphDao<T> {
 	
@@ -8,6 +11,10 @@ public interface InterfaceGraphDao<T> {
 	
 	String readGraph() throws FileNotFoundException, Exception;
 	
-	String loadGraph() throws FileNotFoundException, Exception;
+	HashMap<Integer, Adyacencia[]> loadGraph() throws FileNotFoundException, Exception;
+	
+	//utilidades
+	//metodo bpp busqueda en profundidad
+	Integer[] dfs(int idVertice) throws Exception;
 
 }

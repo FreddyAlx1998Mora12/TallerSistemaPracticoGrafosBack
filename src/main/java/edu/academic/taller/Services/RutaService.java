@@ -52,4 +52,8 @@ public class RutaService {
 	public boolean existRuta(Ruta r) throws Exception {
 		return pdObj.existeRuta(r);
 	}
+	
+	public Float calculoDistancia(Ruta r1, Ruta r2) throws Exception{
+		return pdObj.calcularDistancia(r1, r2);
+	}
 }

@@ -286,4 +286,35 @@ public class RutaDao extends AdapterDao<Ruta> {
 		arr[index1] = arr[index2];
 		arr[index2] = temp;
 	}
+	
+	/**
+	 * Metodo que permite crear la distancia entre un punto u otro utilizando la Distancia Geodésica (Haversine)
+	 * @param v1
+	 * @param v2
+	 * @return
+	 * @throws Exception
+	 */
+	public Float calcularDistancia(Ruta v1, Ruta v2) throws Exception{
+		// Convertir de grados a radianes
+        double lat1Rad = Math.toRadians(v1.getLatitud().doubleValue());
+        double lon1Rad = Math.toRadians(v1.getLongitud().doubleValue());
+        double lat2Rad = Math.toRadians(v2.getLatitud().doubleValue());
+        double lon2Rad = Math.toRadians(v2.getLongitud().doubleValue());
+
+        // Diferencias de latitud y longitud
+        double deltaLat = lat2Rad - lat1Rad;
+        double deltaLon = lon2Rad - lon1Rad;
+
+        // Fórmula de Haversine
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                   Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                   Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // Distancia en kilómetros, 6371.0 equivale al radio del planeta, resultado en km
+        Double distancia = (double) (Math.round((6371.0 * c)*100.0) / 100.0);
+        Float floatValue = Float.valueOf(distancia.floatValue());
+
+        return floatValue;
+	}
 }

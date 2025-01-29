@@ -23,14 +23,6 @@ public class MyLinkedList<E> {
 		this.header = header;
 	}
 
-	private Integer getSize() {
-		return size;
-	}
-
-	private void setSize(Integer size) {
-		this.size = size;
-	}
-
 	public Node<E> getHeader() {
 		return header;
 	}
@@ -45,6 +37,14 @@ public class MyLinkedList<E> {
 
 	public void setLast(Node<E> last) {
 		this.last = last;
+	}
+	
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
 	}
 
 //	#########################################################
@@ -613,5 +613,4 @@ public class MyLinkedList<E> {
 		}
 		return lista;
 	}
-
 }
