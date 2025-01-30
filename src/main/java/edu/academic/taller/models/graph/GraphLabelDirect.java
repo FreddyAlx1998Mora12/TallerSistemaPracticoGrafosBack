@@ -29,7 +29,7 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 	private Class<E> clazz;
 
 	public static String filePath = "src/main/resources/graphs/"; // para almacenar los archivos json
-	public static String filePath2 = "/home/freddy/Documentos/ProyectosDesarrollo/Python/SistemaTaller_RutaTransporte_Grafos/templates/components/lineas_rutas/"; // para
+	public static String filePath2 = "/home/freddy/Documentos/ProyectosDesarrollo/Python/SistemaTaller_RutaTransporte_Grafos/static/js/"; // para
 																																									// mostrar
 																																									// grafo
 
@@ -195,8 +195,11 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 			fw.write(json);
 			fw.flush();
 			fw.close();
-
-			fw2.write(sb2.toString());
+			if(!json.isEmpty()) {
+				fw2.write(sb2.toString());
+			}else {				
+				fw2.write(json);
+			}
 			fw2.flush();
 			fw2.close();
 		} catch (IOException e) {
@@ -337,36 +340,49 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 	@Override
 	public Integer[] dfs(int idVertice) throws Exception {
 		MyLinkedList<Integer> nodos_visitados = new MyLinkedList<>();
-		boolean[] visitados = new boolean[nro_vertice() + 1]; // Arreglo para marcar que vertice se visitto
-//		System.out.println("longitud "+visitados.length);
+		// Simulara una pila
+		MyLinkedList<Integer> pila = new MyLinkedList<>();
+		// Arreglo para marcar el vertice que se visit
+		boolean[] visitados = new boolean[nro_vertice() + 1]; 
+
+		// Iniciamos con el vértice de inicio
+		pila.add(idVertice);
+
+		while (!pila.isEmptyLinkedList()) {
+		    // desapilamos
+		    int vertice_actual = pila.get(pila.getSize() - 1);
+		    pila.remove(pila.getSize() - 1);
+
+		    // Si el nodo no ha sido visitado, lo procesamos
+		    if (!visitados[vertice_actual]) {
+		        visitados[vertice_actual] = true;
+		        nodos_visitados.add(vertice_actual);
+
+		        // Obtenemos la lista de adyacencias del nodo actual
+		        MyLinkedList<Adyacencia> ady = adyacencia(vertice_actual);
+
+		        // Recorremos los nodos adyacentes
+		        if (!ady.isEmptyLinkedList()) {					
+		        	for (Adyacencia ad : ady.toArray()) {
+		        		int vertice_destino = ad.getVertice_destino();
+		        		if (!visitados[vertice_destino]) {
+		        			// Agregamos el nodo adyacente a la pila
+		        			pila.add(vertice_destino);
+		        		}
+		        	}
+				}
+		    }
+		}
+
+		// Al final, nodos_visitados contendrá el orden de visita de los nodos
+		System.out.println("Nodos visitados en orden DFS: " + nodos_visitados);
+		
 		try {
-			dfsRecursivo(idVertice, nodos_visitados, visitados);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return nodos_visitados.toArray();
-	}
-
-	private void dfsRecursivo(int idVertice, MyLinkedList<Integer> nodosVisitados, boolean[] visitados)
-			throws Exception {
-		visitados[idVertice] = true; // Marcamos el vértice como visitado
-		nodosVisitados.add(idVertice); // Añadimos el vértice a la lista de nodos visitados
-
-		System.out.println("Visitando vértice: " + idVertice);
-		
-		// Obtenemos las adyacencias del vértice actual
-		MyLinkedList<Adyacencia> adyacencias = adyacencia(idVertice);
-
-		// Recorremos todas las adyacencias del vértice actual
-		for (Adyacencia ady : adyacencias.toArray()) {
-			// Si el vértice destino no ha sido visitado, llamamos recursivamente
-			if (!visitados[ady.getVertice_destino()]) {
-				dfsRecursivo(ady.getVertice_destino(), nodosVisitados, visitados);
-			}
-		}
-		
-		// nodosVisitados.remove(0); //
 	}
 
 	public Float[] bellmanFord(int verticeOrigen) throws Exception {
@@ -432,17 +448,17 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 		return false;
 	}
 
-	public Float[][] floydWarshall() {
+	public Float[][] floydW() {
 		int n = nro_vertice();
-		Float[][] dist = new Float[n + 1][n + 1]; // Matriz de distancias
+		Float[][] distancs = new Float[n + 1][n + 1]; // Matriz de distancias
 
 		// Inicializamos la matriz de distancias
 		for (int i = 1; i <= n; i++) {
 			for (int j = 1; j <= n; j++) {
 				if (i == j) {
-					dist[i][j] = 0.0f; // es la diagonal
+					distancs[i][j] = 0.0f; // es la diagonal
 				} else {
-					dist[i][j] = Float.POSITIVE_INFINITY; // Inicializamos con infinito
+					distancs[i][j] = Float.POSITIVE_INFINITY; // Inicializamos con infinito
 				}
 			}
 		}
@@ -455,7 +471,7 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 				for (Adyacencia aux : arr_ady) {
 					int destino = aux.getVertice_destino();
 					float peso = aux.getPeso();
-					dist[i][destino] = peso; // Asignamos el peso calculado
+					distancs[i][destino] = peso; // Asignamos el peso calculado
 				}
 			}
 		}
@@ -464,29 +480,34 @@ public class GraphLabelDirect<E> extends GraphDirect implements InterfaceGraphDa
 			for (int i = 1; i <= n; i++) {
 				for (int j = 1; j <= n; j++) {
 					// Si el camino i -> k -> j es más corto que el camino directo i -> j
-					if (dist[i][j] > dist[i][k] + dist[k][j]) {
-						dist[i][j] = dist[i][k] + dist[k][j];
+					if (distancs[i][j] > distancs[i][k] + distancs[k][j]) {
+						distancs[i][j] = distancs[i][k] + distancs[k][j];
 					}
 				}
 			}
 		}
 
-		return dist; // Devolvemos la matriz de distancias más cortas
+		return distancs; // Devolvemos la matriz de distancias más cortas
 	}
 
 	// Método para mostrar la matriz de distancias
-	public void imprimirDistancia(Float[][] dist) {
+	public String imprimirDistancia(Float[][] dist) {
+		StringBuilder recorr_Floyd = new StringBuilder();
 		int n = dist.length - 1; // Ajustamos el número de vértices
 		for (int i = 1; i <= n; i++) {
 			for (int j = 1; j <= n; j++) {
 				if (dist[i][j] == Float.POSITIVE_INFINITY) {
 					System.out.print("∞ ");
+					recorr_Floyd.append("∞ ");
 				} else {
 					System.out.print(dist[i][j] + " ");
+					recorr_Floyd.append(dist[i][j] + " ");
 				}
 			}
 			System.out.println();
+			recorr_Floyd.append("\n");
 		}
+		return recorr_Floyd.toString();
 	}
 
 //	@Override

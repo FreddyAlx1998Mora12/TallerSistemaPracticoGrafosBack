@@ -1,6 +1,7 @@
 package edu.academic.taller.rest;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -17,7 +18,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import edu.academic.taller.Services.RutaService;
-import edu.academic.taller.models.Estacion;
 import edu.academic.taller.models.Ruta;
 import edu.academic.taller.models.graph.Adyacencia;
 import edu.academic.taller.models.graph.GraphLabelDirect;
@@ -277,15 +277,18 @@ public class RutaApi {
 
 			// implementar logica de bpp
 			Integer[] nodos_dfs = grafo.dfs(1);
+			StringBuilder recorridDFS = new StringBuilder();
 
 			System.out.println("Nodos visitados con algoritmo dfs");
 			// mostramos las etiquetas
 			for (int i = 0; i < nodos_dfs.length - 1; i++) {
-				System.out.println("." + nodos_dfs[i]);
-				System.out.println("-> " + grafo.getLabel(nodos_dfs[i]).getDescripcion());
+//				System.out.println("." + nodos_dfs[i]);
+				recorridDFS.append("-> "+nodos_dfs[i]+" : "+grafo.getLabel(nodos_dfs[i]).getDescripcion()+"\n");
+//				System.out.println("-> " + grafo.getLabel(nodos_dfs[i]).getDescripcion());
 			}
 
 			map.put("data", "Grafo cargado correctmente.");
+			map.put("dataGraph", recorridDFS.toString());
 		} catch (Exception e) {
 			// TODO: handle exception
 			map.put("error", e.getLocalizedMessage());
@@ -348,14 +351,20 @@ public class RutaApi {
 			// grafo construido, ejecutamos
 			// testeamos si esta el grafo construido
 			System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
+			StringBuilder recorridBell = new StringBuilder();
 
 			// implementar logica de bpp
 			Float[] dist = grafo.bellmanFord(1);
+			
 			if (dist == null) {
-				map.put("data", "Grafo con ciclo negativo.");
+				map.put("dataGraph", "Grafo con ciclo negativo.");
 			} else {
-				System.out.println("long dit" + dist);
+				for (int i = 1; i <= dist.length-1; i++) {
+					recorridBell.append("> "+i+" : "+dist[i]+"\n");
+				}
+//				System.out.println("long dit" + dist);
 				map.put("data", "Grafo no contiene ciclo negativo.");
+				map.put("dataGraph", recorridBell.toString());
 			}
 
 		} catch (Exception e) {
@@ -420,15 +429,18 @@ public class RutaApi {
 			// grafo construido, ejecutamos
 			// testeamos si esta el grafo construido
 			System.out.println("Grafo construido, esta etiquetado? " + grafo.isLabelGraph());
-
+			
+			
 			// implementar logica de bpp
-			Float[][] dist = grafo.floydWarshall();
-			grafo.imprimirDistancia(dist);
-			if (dist == null) {
+			Float[][] distancias = grafo.floydW();
+			
+			String recorr_Floyd = grafo.imprimirDistancia(distancias);
+			if (distancias == null) {
 				map.put("data", "Grafo con ciclo negativo.");
 			} else {
-				System.out.println("long dit" + dist);
+//				System.out.println("long dit" + distancias);
 				map.put("data", "Grafo no contiene ciclo negativo.");
+				map.put("dataGraph", recorr_Floyd);
 			}
 
 		} catch (Exception e) {
