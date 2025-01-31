@@ -1,0 +1,50 @@
+[
+  {
+    "idRuta": 1,
+    "descripcion": "Brigada Militar",
+    "latitud": -3.98003234317477,
+    "longitud": -79.20584946870804
+  },
+  {
+    "idRuta": 2,
+    "descripcion": "Colegio La Salle",
+    "latitud": -3.998516149618231,
+    "longitud": -79.19595748186113
+  },
+  {
+    "idRuta": 3,
+    "descripcion": "Universidad Tecnica",
+    "latitud": -3.9860580883432055,
+    "longitud": -79.19924050569536
+  },
+  {
+    "idRuta": 4,
+    "descripcion": "PRESTIGIOSA UNL",
+    "latitud": -4.030844164739815,
+    "longitud": -79.20019805431367
+  },
+  {
+    "idRuta": 5,
+    "descripcion": "Comando de la Policia",
+    "latitud": -4.009128915255593,
+    "longitud": -79.2076760530472
+  },
+  {
+    "idRuta": 6,
+    "descripcion": "Esteban Godoy",
+    "latitud": -4.026456211251778,
+    "longitud": -79.20736491680147
+  },
+  {
+    "idRuta": 7,
+    "descripcion": "Iglesia la Catedral",
+    "latitud": -3.996750198828271,
+    "longitud": -79.2010322213173
+  },
+  {
+    "idRuta": 8,
+    "descripcion": "Cementerio General",
+    "latitud": -4.01924279241671,
+    "longitud": -79.20627057552339
+  }
+]

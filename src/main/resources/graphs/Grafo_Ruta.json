@@ -1,0 +1,74 @@
+{
+  "1": [
+    {
+      "vertice_destino": 2,
+      "peso": 2.33
+    },
+    {
+      "vertice_destino": 3,
+      "peso": 0.99
+    }
+  ],
+  "2": [
+    {
+      "vertice_destino": 3,
+      "peso": 1.43
+    },
+    {
+      "vertice_destino": 5,
+      "peso": 1.76
+    }
+  ],
+  "3": [
+    {
+      "vertice_destino": 4,
+      "peso": 4.98
+    },
+    {
+      "vertice_destino": 5,
+      "peso": 2.73
+    }
+  ],
+  "4": [
+    {
+      "vertice_destino": 5,
+      "peso": 2.55
+    },
+    {
+      "vertice_destino": 7,
+      "peso": 3.79
+    }
+  ],
+  "5": [
+    {
+      "vertice_destino": 6,
+      "peso": 1.93
+    }
+  ],
+  "6": [
+    {
+      "vertice_destino": 7,
+      "peso": 3.38
+    },
+    {
+      "vertice_destino": 3,
+      "peso": 4.58
+    }
+  ],
+  "7": [
+    {
+      "vertice_destino": 8,
+      "peso": 2.57
+    },
+    {
+      "vertice_destino": 5,
+      "peso": 1.56
+    }
+  ],
+  "8": [
+    {
+      "vertice_destino": 5,
+      "peso": 1.14
+    }
+  ]
+}
